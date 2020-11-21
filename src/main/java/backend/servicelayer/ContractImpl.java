@@ -1,6 +1,8 @@
 package backend.servicelayer;
 
+import backend.datalayer.dao.BookingRepository;
 import backend.datalayer.dao.CarRepository;
+import backend.datalayer.dao.impl.BookingRepositoryImpl;
 import backend.datalayer.dao.impl.CarRepositoryImpl;
 import booking.dto.*;
 import booking.eto.InvalidInputException;
@@ -14,9 +16,11 @@ import java.util.List;
 
 public class ContractImpl implements booking.Contract{
     CarRepository carRepository;
+    BookingRepository bookingRepository;
 
-    public ContractImpl(CarRepository carRepository) {
+    public ContractImpl(CarRepository carRepository, BookingRepository bookingRepository) {
         this.carRepository = carRepository;
+        this.bookingRepository = bookingRepository;
     }
 
     public Collection<CarSummary> listAvailableCars(BookingCriteria bookingCriteria) throws NotFoundException, InvalidInputException {
@@ -49,6 +53,7 @@ public class ContractImpl implements booking.Contract{
 
     //Claus vil kigge på denne :)
     public BookingDetails findBooking(BookingIdentifier bookingIdentifier) throws NotFoundException, InvalidInputException {
+        bookingRepository.findBooking(bookingIdentifier.getId());
         return null;
     }
 }

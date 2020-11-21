@@ -1,8 +1,11 @@
 package backend.servicelayer;
 
+import backend.datalayer.dao.BookingRepository;
 import backend.datalayer.dao.CarRepository;
+import backend.datalayer.dao.impl.CarRepositoryImpl;
 import booking.Contract;
 import booking.dto.BookingCriteria;
+import booking.dto.BookingIdentifier;
 import booking.dto.CarSummary;
 import booking.entity.Address;
 import booking.entity.Car;
@@ -30,10 +33,10 @@ public class ContractImplTest
 {
     // DOC
     CarRepository carRepository = mock(CarRepository.class);
-
+    BookingRepository bookingRepository = mock(BookingRepository.class);
 
     // SUT
-    Contract contractImpl = new ContractImpl(carRepository);
+    Contract contractImpl = new ContractImpl(carRepository, bookingRepository);
 
     //Test data
     BookingCriteria bookingCriteria;
@@ -61,8 +64,6 @@ public class ContractImplTest
 
         // Assert
         verify(carRepository, times(1)).findAvailableCars(any(BookingCriteria.class));
-        // egentlig er carRepository vel kun interesseret i at kende til sted og tid?
-        //verify(carRepository, times(1)).findAvailableCars(any(LocalDateTime.class), any(Place.class));
     }
 
     @Test
@@ -78,6 +79,17 @@ public class ContractImplTest
 
         // Assert
         assertNotNull(cars);
+    }
+
+    @Test
+    public void mustCallBookingRepositoryWhenFindingBooking() throws NotFoundException, InvalidInputException
+    {
+        // Arrange
+        // Act
+        contractImpl.findBooking(new BookingIdentifier(1));
+
+        // Assert
+        verify(bookingRepository, times(1)).findBooking(anyInt());
     }
 
 
