@@ -4,13 +4,14 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-public class Employee {
+@Table(name = "employee")
+public class EmployeeDB {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     @OneToOne
-    private Address address;
+    private AddressDB addressDB;
     private String email;
     private Date dateOfBirth;
     private int socialSecurityNumber;
@@ -18,18 +19,18 @@ public class Employee {
     private String username;
     private transient String password;
 
-    public Employee(booking.entity.Employee employee) {
-        this.name = employee.getName();
-        this.address = new Address(employee.getAddress());
-        this.email = employee.getEmail();
-        this.dateOfBirth = employee.getDateOfBirth();
-        this.socialSecurityNumber = employee.getSocialSecurityNumber();
-        this.active = employee.isActive();
-        this.username = employee.getUsername();
-        this.password = employee.getPassword();
+    public EmployeeDB(String name, AddressDB address, String email, Date date, int socialSecurityNumber, boolean active, String username, String password) {
+        this.name = name;
+        this.addressDB = address;
+        this.email = email;
+        this.dateOfBirth = date;
+        this.socialSecurityNumber = socialSecurityNumber;
+        this.active = active;
+        this.username = username;
+        this.password = password;
     }
 
-    public Employee() {
+    public EmployeeDB() {
     }
 
     public Long getId() {
@@ -40,8 +41,8 @@ public class Employee {
         return name;
     }
 
-    public Address getAddress() {
-        return address;
+    public AddressDB getAddress() {
+        return addressDB;
     }
 
     public String getEmail() {

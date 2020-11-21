@@ -1,14 +1,14 @@
 package backend.datalayer.entity;
 
+import backend.datalayer.constants.Place;
 import booking.entity.Type;
+import com.sun.istack.Nullable;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
-public class Car {
+@Table(name = "car")
+public class CarDB {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -18,17 +18,22 @@ public class Car {
     private double price;
     private int noOfSeats;
     private transient boolean active;
+    private Place place;
+    @OneToOne
+    private AddressDB station;
 
-    public Car(booking.entity.Car car) {
+    public CarDB(booking.entity.Car car, Place place, AddressDB station) {
         this.vin = car.getVin();
         this.licensePlate = car.getLicensePlate();
         this.type = car.getType();
         this.price = car.getPrice();
         this.noOfSeats = car.getNoOfSeats();
         this.active = car.isActive();
+        this.place = place;
+        this.station = station;
     }
 
-    public Car() {
+    public CarDB() {
 
     }
 
@@ -58,5 +63,13 @@ public class Car {
 
     public boolean isActive() {
         return active;
+    }
+
+    public Place getPlace() {
+        return place;
+    }
+
+    public AddressDB getStation() {
+        return station;
     }
 }

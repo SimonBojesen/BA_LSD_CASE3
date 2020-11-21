@@ -5,24 +5,25 @@ import booking.entity.Rating;
 import javax.persistence.*;
 
 @Entity
-public class Hotel {
+@Table(name = "hotel")
+public class HotelDB {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     @OneToOne
-    private Address address;
+    private AddressDB addressDB;
     private boolean active;
     private Rating rating;
 
-    public Hotel() {
+    public HotelDB() {
     }
 
-    public Hotel(booking.entity.Hotel hotel) {
-        this.name = hotel.getName();
-        this.address = new Address(hotel.getAddress());
-        this.active = hotel.isActive();
-        this.rating = hotel.getRating();
+    public HotelDB(String name, AddressDB address, boolean active, Rating rating) {
+        this.name = name;
+        this.addressDB = address;
+        this.active = active;
+        this.rating = rating;
     }
     public Long getId() {
         return id;
@@ -32,8 +33,8 @@ public class Hotel {
         return name;
     }
 
-    public Address getAddress() {
-        return address;
+    public AddressDB getAddress() {
+        return addressDB;
     }
 
     public boolean isActive() {

@@ -4,30 +4,31 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-public class Driver {
+@Table(name = "driver")
+public class DriverDB {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     @OneToOne
-    private Address address;
+    private AddressDB addressDB;
     private String email;
     private Date dateOfBirth;
     private int socialSecurityNumber;
     private boolean active;
     private long licenseNo;
 
-    public Driver(booking.entity.Driver driver) {
-        this.name = driver.getName();
-        this.address = new Address(driver.getAddress());
-        this.email = driver.getEmail();
-        this.dateOfBirth = driver.getDateOfBirth();
-        this.socialSecurityNumber = driver.getSocialSecurityNumber();
-        this.active = driver.isActive();
-        this.licenseNo = driver.getLicenseNo();
+    public DriverDB(String name, AddressDB address, String email, Date date, int socialSecurityNumber, boolean active, long licenseNo) {
+        this.name = name;
+        this.addressDB = address;
+        this.email = email;
+        this.dateOfBirth = date;
+        this.socialSecurityNumber = socialSecurityNumber;
+        this.active = active;
+        this.licenseNo = licenseNo;
     }
 
-    public Driver() {
+    public DriverDB() {
 
     }
 
@@ -39,8 +40,8 @@ public class Driver {
         return name;
     }
 
-    public Address getAddress() {
-        return address;
+    public AddressDB getAddress() {
+        return addressDB;
     }
 
     public String getEmail() {

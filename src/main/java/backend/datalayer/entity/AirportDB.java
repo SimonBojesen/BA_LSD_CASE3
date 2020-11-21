@@ -3,22 +3,23 @@ package backend.datalayer.entity;
 import javax.persistence.*;
 
 @Entity
-public class Airport {
+@Table(name = "airport")
+public class AirportDB {
     @Id
     private String IATA;
     private String name;
     @OneToOne
-    private Address address;
+    private AddressDB addressDB;
     private boolean active;
 
-    public Airport() {
+    public AirportDB() {
     }
 
-    public Airport(booking.entity.Airport airport) {
-        this.IATA = airport.getIATA();
-        this.name = airport.getName();
-        this.address = new Address(airport.getAddress());
-        this.active = airport.isActive();
+    public AirportDB(String IATA, String name, AddressDB address, boolean active) {
+        this.IATA = IATA;
+        this.name = name;
+        this.addressDB = address;
+        this.active = active;
     }
 
     public String getIATA() {
@@ -29,8 +30,8 @@ public class Airport {
         return name;
     }
 
-    public Address getAddress() {
-        return address;
+    public AddressDB getAddress() {
+        return addressDB;
     }
 
     public boolean isActive() {

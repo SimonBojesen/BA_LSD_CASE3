@@ -3,7 +3,8 @@ package backend.datalayer.entity;
 import javax.persistence.*;
 
 @Entity
-public class Address{
+@Table(name = "address")
+public class AddressDB {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -12,17 +13,17 @@ public class Address{
     private int postalCode;
     private String city;
 
-    public Address() {
+    public AddressDB() {
     }
 
     //Wrong one
-    public Address(String streetAddress, int postalCode, String city) {
+    public AddressDB(String streetAddress, int postalCode, String city) {
         this.streetAddress = streetAddress;
         this.postalCode = postalCode;
         this.city = city;
     }
 
-    public Address(booking.entity.Address address) {
+    public AddressDB(booking.entity.Address address) {
         this.streetAddress = address.getStreetAddress();
         this.postalCode = address.getPostalCode();
         this.city = address.getCity();
