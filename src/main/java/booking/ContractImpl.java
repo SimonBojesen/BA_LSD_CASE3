@@ -18,27 +18,22 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-@Component("ContractImpl")
+@Service("ContractImpl")
 public class ContractImpl implements booking.Contract {
-    @Autowired
-    private AddressRepository addressRepository;
-    @Autowired
-    private EmployeeRepository employeeRepository;
-    @Autowired
-    private DriverRepository driverRepository;
-    @Autowired
-    private CarRepository carRepository;
-    @Autowired
-    private BookingRepository bookingRepository;
+    private static AddressRepository addressRepository;
+    private static EmployeeRepository employeeRepository;
+    private static DriverRepository driverRepository;
+    private static CarRepository carRepository;
+    private static BookingRepository bookingRepository;
 
-    /*@Autowired
-    public ContractImpl(AddressRepository addressRepository, HotelRepository hotelRepository, AirportRepository airportRepository, EmployeeRepository employeeRepository, DriverRepository driverRepository, CarRepository carRepository, BookingRepository bookingRepository) {
+    @Autowired
+    public ContractImpl(AddressRepository addressRepository, EmployeeRepository employeeRepository, DriverRepository driverRepository, CarRepository carRepository, BookingRepository bookingRepository) {
         this.addressRepository = addressRepository;
         this.employeeRepository = employeeRepository;
         this.driverRepository = driverRepository;
         this.carRepository = carRepository;
         this.bookingRepository = bookingRepository;
-    }*/
+    }
 
     public Collection<CarSummary> listAvailableCars(BookingCriteria bookingCriteria) throws NotFoundException, InvalidInputException {
         //carRepository.findAvailableCars(bookingCriteria);

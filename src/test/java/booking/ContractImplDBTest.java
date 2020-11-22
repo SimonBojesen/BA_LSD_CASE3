@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.context.annotation.ComponentScan;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -21,20 +22,22 @@ import java.util.Date;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
+@ComponentScan("booking")
 public class ContractImplDBTest {
+
     @Autowired
     private TestEntityManager em;
 
     @Autowired
     @Qualifier("ContractImpl")
-    private Contract contractImpl;
+    private ContractImpl contractImpl;
 
     //TESTDATA
     Address address = new Address("testvej", 1111, "testby");;
     Address address2 = new Address("testvej2", 11112, "testby2");;
-    Car car1 = new Car("", "", Type.B, 200.0, 2, false);
-    Car car2 = new Car("", "", Type.B, 200.0, 2, false);
-    Car car3 = new Car("", "", Type.A, 400.0, 4, true);
+    Car car1 = new Car("", "testPlate", Type.B, 200.0, 2, false);
+    Car car2 = new Car("", "testPlate2", Type.B, 200.0, 2, false);
+    Car car3 = new Car("", "testPlate3", Type.A, 400.0, 4, true);
     Driver driver = new Driver("simon", address, "simon@simonsen.dk", new Date(), 1234, true, 1232344L);
     Hotel hotel = new Hotel("testHotel", address, true, 1, Rating.FIVE);
     Airport airport = new Airport("Københavns Lufthavn", address2, true,  "123nrk");
