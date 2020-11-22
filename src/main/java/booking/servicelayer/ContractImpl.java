@@ -1,4 +1,4 @@
-package booking;
+package booking.servicelayer;
 
 import booking.datalayer.dao.*;
 import booking.datalayer.entity.*;
@@ -10,9 +10,9 @@ import booking.eto.NotFoundException;
 import booking.eto.PersistanceFailedException;
 import booking.eto.UnavailableException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -20,11 +20,11 @@ import java.util.Optional;
 
 @Service("ContractImpl")
 public class ContractImpl implements booking.Contract {
-    private static AddressRepository addressRepository;
-    private static EmployeeRepository employeeRepository;
-    private static DriverRepository driverRepository;
-    private static CarRepository carRepository;
-    private static BookingRepository bookingRepository;
+    private AddressRepository addressRepository;
+    private EmployeeRepository employeeRepository;
+    private DriverRepository driverRepository;
+    private CarRepository carRepository;
+    private BookingRepository bookingRepository;
 
     @Autowired
     public ContractImpl(AddressRepository addressRepository, EmployeeRepository employeeRepository, DriverRepository driverRepository, CarRepository carRepository, BookingRepository bookingRepository) {
@@ -34,6 +34,7 @@ public class ContractImpl implements booking.Contract {
         this.carRepository = carRepository;
         this.bookingRepository = bookingRepository;
     }
+
 
     public Collection<CarSummary> listAvailableCars(BookingCriteria bookingCriteria) throws NotFoundException, InvalidInputException {
         //carRepository.findAvailableCars(bookingCriteria);
@@ -66,28 +67,28 @@ public class ContractImpl implements booking.Contract {
                 return 100.0;
             }
         } else {
-            throw new NullPointerException("pickup place or delivery place must not be null");
+            throw new InvalidInputException("pickup place or delivery place must not be null");
         }
     }
 
-    //Simon vil tænke over denne
     public BookingDetails createBooking(BookingCriteria bookingCriteria, Double price, DriverDetails driverDetails, EmployeeDetails employeeDetails, CarSummary carSummary) throws InvalidInputException {
-        //Remember null checks
-        HelperFunctions.nullCheck(bookingCriteria);
-        HelperFunctions.nullCheck(price);
-        HelperFunctions.nullCheck(driverDetails);
-        HelperFunctions.nullCheck(employeeDetails);
-        HelperFunctions.nullCheck(carSummary);
+        try {
+            HelperFunctions.nullCheck(bookingCriteria);
+            HelperFunctions.nullCheck(price);
+            HelperFunctions.nullCheck(driverDetails);
+            HelperFunctions.nullCheck(employeeDetails);
+            HelperFunctions.nullCheck(carSummary);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new InvalidInputException("We found null values in provided input");
+        }
 
         Double fee = calculateFee(bookingCriteria);
-
-        BookingDetails booking = new BookingDetails(null, carSummary, driverDetails, employeeDetails, bookingCriteria, fee, price);
-        return booking;
+        return new BookingDetails(null, carSummary, driverDetails, employeeDetails, bookingCriteria, fee, price);
     }
 
-    //Simon vil tænke over denne
     public BookingDetails saveBooking(BookingDetails bookingDetails) throws PersistanceFailedException, UnavailableException {
-        BookingDetails booking = null;
+        BookingDetails booking;
         Address deliveryPlace = bookingDetails.getBookingCriteria().getDeliveryPlace().getAddress();
 
         Optional<DriverDB> driver = driverRepository.findByLicenseNo(bookingDetails.getDriverDetails().getLicenseNo());
@@ -95,7 +96,18 @@ public class ContractImpl implements booking.Contract {
         Optional<EmployeeDB> employee = employeeRepository.findBySocialSecurityNumber(bookingDetails.getEmployeeDetails().getSocialSecurityNumber());
         Optional<AddressDB> deliveryStation = addressRepository.findByStreetAddressAndCityAndPostalCode(deliveryPlace.getStreetAddress(), deliveryPlace.getCity(), deliveryPlace.getPostalCode());
 
-        if (car.isPresent() && employee.isPresent() && deliveryStation.isPresent()) {
+        String notfound = " is not found";
+        if (!car.isPresent()) {
+            throw new UnavailableException("Car" + notfound);
+        }
+        if (!employee.isPresent()) {
+            throw new UnavailableException("Emlployee" + notfound);
+        }
+        if (!deliveryStation.isPresent()) {
+            throw new UnavailableException("Delivery station" + notfound);
+        }
+
+        try {
             if (!driver.isPresent()) {
                 AddressDB addressToSave = new AddressDB(bookingDetails.getDriverDetails().getDriver().getAddress());
                 addressToSave = addressRepository.save(addressToSave);
@@ -105,6 +117,8 @@ public class ContractImpl implements booking.Contract {
             BookingDB bookingToSave = new BookingDB(car.get(), driver.get(), employee.get(), deliveryStation.get(), bookingDetails.getBookingCriteria().getPickUpTime(), bookingDetails.getBookingCriteria().getDeliveryTime(), bookingDetails.getPrice(), bookingDetails.getFee());
             bookingToSave = bookingRepository.save(bookingToSave);
             booking = new BookingDetails(bookingToSave.getId(), bookingDetails.getCar(), bookingDetails.getDriverDetails(), bookingDetails.getEmployeeDetails(), bookingDetails.getBookingCriteria(), bookingDetails.getFee(), bookingDetails.getPrice());
+        } catch (Exception ex) {
+            throw new PersistanceFailedException("An error happened while saving to DB");
         }
 
         return booking;

@@ -1,6 +1,5 @@
-package booking;
+package booking.servicelayer;
 
-import booking.ContractImpl;
 import booking.datalayer.constants.Place;
 import booking.datalayer.entity.*;
 import booking.dto.*;
@@ -8,6 +7,7 @@ import booking.entity.*;
 import booking.eto.InvalidInputException;
 import booking.eto.PersistanceFailedException;
 import booking.eto.UnavailableException;
+import booking.servicelayer.ContractImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -22,7 +23,8 @@ import java.util.Date;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-@ComponentScan("booking")
+@ComponentScan("booking.servicelayer")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class ContractImplDBTest {
 
     @Autowired
@@ -33,8 +35,8 @@ public class ContractImplDBTest {
     private ContractImpl contractImpl;
 
     //TESTDATA
-    Address address = new Address("testvej", 1111, "testby");;
-    Address address2 = new Address("testvej2", 11112, "testby2");;
+    Address address = new Address("testvej", 1111, "testby");
+    Address address2 = new Address("testvej2", 11112, "testby2");
     Car car1 = new Car("", "testPlate", Type.B, 200.0, 2, false);
     Car car2 = new Car("", "testPlate2", Type.B, 200.0, 2, false);
     Car car3 = new Car("", "testPlate3", Type.A, 400.0, 4, true);

@@ -21,13 +21,13 @@ public class Test {
 
     @Autowired
     public Test(AddressRepository addressRepository, HotelRepository hotelRepository, AirportRepository airportRepository, EmployeeRepository employeeRepository, DriverRepository driverRepository, CarRepository carRepository, BookingRepository bookingRepository) {
-        this.addressRepository = addressRepository;
-        this.hotelRepository = hotelRepository;
-        this.airportRepository = airportRepository;
-        this.employeeRepository = employeeRepository;
-        this.driverRepository = driverRepository;
-        this.carRepository = carRepository;
-        this.bookingRepository = bookingRepository;
+        Test.addressRepository = addressRepository;
+        Test.hotelRepository = hotelRepository;
+        Test.airportRepository = airportRepository;
+        Test.employeeRepository = employeeRepository;
+        Test.driverRepository = driverRepository;
+        Test.carRepository = carRepository;
+        Test.bookingRepository = bookingRepository;
     }
 
     public static void insertIntoDB(){
