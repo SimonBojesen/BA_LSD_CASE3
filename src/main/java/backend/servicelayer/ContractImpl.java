@@ -26,8 +26,37 @@ public class ContractImpl implements booking.Contract{
     }
 
     //Martin vil tænke over denne
+
+    /**
+     *
+     * @param bookingCriteria
+     * @return
+     * @throws InvalidInputException
+     */
     public Double calculateFee(BookingCriteria bookingCriteria) throws InvalidInputException {
-        return null;
+        if(bookingCriteria == null){
+            throw new NullPointerException("bookingCriteria must not be null");
+        }else {
+            var delivery = bookingCriteria.getDeliveryPlace();
+            var pickup = bookingCriteria.getPickUpPlace();
+            if (delivery != null && pickup != null) {
+                if (delivery.getAddress().getPostalCode() == pickup.getAddress().getPostalCode()) {
+                    if (delivery.getAddress().getCity().equalsIgnoreCase(pickup.getAddress().getCity())) {
+                        if (delivery.getAddress().getStreetAddress().equalsIgnoreCase(pickup.getAddress().getStreetAddress())) {
+                            return 0.0;
+                        } else {
+                            return 25.0;
+                        }
+                    } else {
+                        return 50.0;
+                    }
+                } else {
+                    return 100.0;
+                }
+            } else {
+                throw new NullPointerException("pickup place or delivery place must not be null");
+            }
+        }
     }
 
     //Simon vil tænke over denne
