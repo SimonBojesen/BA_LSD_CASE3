@@ -37,4 +37,6 @@ public class AirportDB {
     public boolean isActive() {
         return active;
     }
+
+    public void setAddress(AddressDB value){this.addressDB = value;}
 }

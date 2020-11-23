@@ -44,4 +44,6 @@ public class HotelDB {
     public Rating getRating() {
         return rating;
     }
+
+    public void setAddress(AddressDB value){this.addressDB = value;}
 }

@@ -11,14 +11,12 @@ import booking.eto.NotFoundException;
 import booking.eto.PersistanceFailedException;
 import booking.eto.UnavailableException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service("ContractImpl")
 public class ContractImpl implements booking.Contract {
@@ -27,14 +25,18 @@ public class ContractImpl implements booking.Contract {
     private DriverRepository driverRepository;
     private CarRepository carRepository;
     private BookingRepository bookingRepository;
+    private AirportRepository airportRepository;
+    private HotelRepository hotelRepository;
 
     @Autowired
-    public ContractImpl(AddressRepository addressRepository, EmployeeRepository employeeRepository, DriverRepository driverRepository, CarRepository carRepository, BookingRepository bookingRepository) {
+    public ContractImpl(AddressRepository addressRepository, EmployeeRepository employeeRepository, DriverRepository driverRepository, CarRepository carRepository, BookingRepository bookingRepository, AirportRepository airportRepository, HotelRepository hotelRepository) {
         this.addressRepository = addressRepository;
         this.employeeRepository = employeeRepository;
         this.driverRepository = driverRepository;
         this.carRepository = carRepository;
         this.bookingRepository = bookingRepository;
+        this.airportRepository = airportRepository;
+        this.hotelRepository = hotelRepository;
     }
 
 
@@ -157,9 +159,69 @@ public class ContractImpl implements booking.Contract {
         }
     }
 
-    //Claus vil kigge på denne :)
     public BookingDetails findBooking(BookingIdentifier bookingIdentifier) throws NotFoundException, InvalidInputException {
-        return null;
+        BookingDB bookingDB = bookingRepository.findById(bookingIdentifier.getId()).get();
+
+        Place pickupPlace = CreatePlaceFrom(bookingDB.getPickUpPlace(), bookingDB.getCar().getPlace());
+        Place deliveryPlace = CreatePlaceFrom(bookingDB.getDeliveryPlace(), bookingDB.getCar().getPlace());
+
+        CarSummary carSummary = new CarSummary(bookingDB.getCar().toCar(), pickupPlace);
+        DriverDetails driverDetails = new DriverDetails(bookingDB.getDriver().toDriver(), bookingDB.getDriver().getLicenseNo());
+        EmployeeDetails employeeDetails = new EmployeeDetails(bookingDB.getEmployee().toEmployee());
+        LocalDateTime pickupDate = bookingDB.getPickUpDate();
+        LocalDateTime deliveryDate = bookingDB.getDeliveryDate();
+
+        BookingCriteria bookingCriteria = new BookingCriteria(pickupPlace, deliveryPlace, pickupDate, deliveryDate);
+        BookingDetails bookingDetails = new BookingDetails(bookingDB.getId(), carSummary, driverDetails, employeeDetails, bookingCriteria, bookingDB.getExtraFee(), bookingDB.getPrice());
+
+        return bookingDetails;
+    }
+
+    //not needed now
+    private LocalDateTime localDateTimeFrom(Date date)
+    {
+        return new java.sql.Timestamp(
+                date.getTime()).toLocalDateTime();
+    }
+
+    private Place CreatePlaceFrom(AddressDB addressDB, booking.datalayer.constants.Place placeType)
+    {
+        String name = "";
+        boolean active = false;
+
+        switch(placeType)
+        {
+            case AIRPORT:
+                AirportDB airportDB = findAirportByAddress(addressDB);
+                name = airportDB.getName();
+                active = airportDB.isActive();
+                break;
+            case HOTEL:
+                HotelDB hotelDB = findHotelByAddress(addressDB);
+                name = hotelDB.getName();
+                active = hotelDB.isActive();
+                break;
+            default:
+                break;
+        }
+
+        return new Place(name, addressDB.toAddress(), active);
+    }
+
+    private AirportDB findAirportByAddress(AddressDB addressDB)
+    {
+        AirportDB airportDB = new AirportDB();
+        airportDB.setAddress(addressDB);
+        Example<AirportDB> example = Example.of(airportDB);
+        return airportRepository.findOne(example).get();
+    }
+
+    private HotelDB findHotelByAddress(AddressDB addressDB)
+    {
+        HotelDB hotelDB = new HotelDB();
+        hotelDB.setAddress(addressDB);
+        Example<HotelDB> example = Example.of(hotelDB);
+        return hotelRepository.findOne(example).get();
     }
 
     private BookingDB checkBookingExistAndInputNotNull(BookingIdentifier bookingIdentifier) throws NotFoundException, InvalidInputException {

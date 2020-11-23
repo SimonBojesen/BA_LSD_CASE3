@@ -1,5 +1,7 @@
 package booking.datalayer.entity;
 
+import booking.entity.Address;
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -53,5 +55,10 @@ public class AddressDB {
         AddressDB addressDB = (AddressDB) o;
         return postalCode == addressDB.postalCode &&
                 Objects.equals(streetAddress, addressDB.streetAddress);
+    }
+
+    public Address toAddress()
+    {
+        return new Address(streetAddress, postalCode, city);
     }
 }

@@ -42,7 +42,7 @@ public class ContractImplTest
     private HotelRepository hotelRepository = mock(HotelRepository.class);
 
     // SUT
-    private Contract contractImpl = new ContractImpl(addressRepository,employeeRepository,driverRepository,carRepository,bookingRepository);
+    private Contract contractImpl = new ContractImpl(addressRepository,employeeRepository,driverRepository,carRepository,bookingRepository, airportRepository, hotelRepository);
 
     //Test data
     private Address address;

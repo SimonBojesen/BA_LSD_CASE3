@@ -1,6 +1,7 @@
 package booking.datalayer.entity;
 
 import booking.datalayer.constants.Place;
+import booking.entity.Car;
 import booking.entity.Type;
 
 import javax.persistence.*;
@@ -70,5 +71,10 @@ public class CarDB {
 
     public AddressDB getStation() {
         return station;
+    }
+
+    public Car toCar()
+    {
+        return new Car(this.vin, this.licensePlate, this.type, this.price, this.noOfSeats, this.active);
     }
 }
