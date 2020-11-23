@@ -1,0 +1,171 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: DriverDB</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">booking.datalayer.entity</a> ]
+</div>
+
+<h1>Coverage Summary for Class: DriverDB (booking.datalayer.entity)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DriverDB</td>
+<td class="coverageStat">
+  <span class="percent">
+    18,2%
+  </span>
+  <span class="absValue">
+    (2/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    39,3%
+  </span>
+  <span class="absValue">
+    (11/ 28)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">DriverDB$HibernateProxy$26cLuiFf</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    18,2%
+  </span>
+  <span class="absValue">
+    (2/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    39,3%
+  </span>
+  <span class="absValue">
+    (11/ 28)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package booking.datalayer.entity;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import booking.entity.Driver;
+<i>4</i>&nbsp;
+<i>5</i>&nbsp;import javax.persistence.*;
+<i>6</i>&nbsp;import java.util.Date;
+<i>7</i>&nbsp;
+<i>8</i>&nbsp;@Entity
+<i>9</i>&nbsp;@Table(name = &quot;driver&quot;)
+<i>10</i>&nbsp;public class DriverDB {
+<i>11</i>&nbsp;    @Id
+<i>12</i>&nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
+<i>13</i>&nbsp;    private Long id;
+<i>14</i>&nbsp;    private String name;
+<i>15</i>&nbsp;    @OneToOne
+<i>16</i>&nbsp;    private AddressDB addressDB;
+<i>17</i>&nbsp;    private String email;
+<i>18</i>&nbsp;    private Date dateOfBirth;
+<i>19</i>&nbsp;    private int socialSecurityNumber;
+<i>20</i>&nbsp;    private boolean active;
+<i>21</i>&nbsp;    private long licenseNo;
+<i>22</i>&nbsp;
+<b class="fc"><i>23</i>&nbsp;    public DriverDB(String name, AddressDB address, String email, Date date, int socialSecurityNumber, boolean active, long licenseNo) {</b>
+<b class="fc"><i>24</i>&nbsp;        this.name = name;</b>
+<b class="fc"><i>25</i>&nbsp;        this.addressDB = address;</b>
+<b class="fc"><i>26</i>&nbsp;        this.email = email;</b>
+<b class="fc"><i>27</i>&nbsp;        this.dateOfBirth = date;</b>
+<b class="fc"><i>28</i>&nbsp;        this.socialSecurityNumber = socialSecurityNumber;</b>
+<b class="fc"><i>29</i>&nbsp;        this.active = active;</b>
+<b class="fc"><i>30</i>&nbsp;        this.licenseNo = licenseNo;</b>
+<b class="fc"><i>31</i>&nbsp;    }</b>
+<i>32</i>&nbsp;
+<b class="nc"><i>33</i>&nbsp;    public DriverDB(Driver driver, AddressDB address) {</b>
+<b class="nc"><i>34</i>&nbsp;        this.name = driver.getName();</b>
+<b class="nc"><i>35</i>&nbsp;        this.addressDB = address;</b>
+<b class="nc"><i>36</i>&nbsp;        this.email = driver.getEmail();</b>
+<b class="nc"><i>37</i>&nbsp;        this.dateOfBirth = driver.getDateOfBirth();</b>
+<b class="nc"><i>38</i>&nbsp;        this.socialSecurityNumber = driver.getSocialSecurityNumber();</b>
+<b class="nc"><i>39</i>&nbsp;        this.active = driver.isActive();</b>
+<b class="nc"><i>40</i>&nbsp;        this.licenseNo = driver.getLicenseNo();</b>
+<b class="nc"><i>41</i>&nbsp;    }</b>
+<i>42</i>&nbsp;
+<b class="fc"><i>43</i>&nbsp;    public DriverDB() {</b>
+<i>44</i>&nbsp;
+<b class="fc"><i>45</i>&nbsp;    }</b>
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;    public Long getId() {
+<b class="nc"><i>48</i>&nbsp;        return id;</b>
+<i>49</i>&nbsp;    }
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;    public String getName() {
+<b class="nc"><i>52</i>&nbsp;        return name;</b>
+<i>53</i>&nbsp;    }
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;    public AddressDB getAddress() {
+<b class="nc"><i>56</i>&nbsp;        return addressDB;</b>
+<i>57</i>&nbsp;    }
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;    public String getEmail() {
+<b class="nc"><i>60</i>&nbsp;        return email;</b>
+<i>61</i>&nbsp;    }
+<i>62</i>&nbsp;
+<i>63</i>&nbsp;    public Date getDateOfBirth() {
+<b class="nc"><i>64</i>&nbsp;        return dateOfBirth;</b>
+<i>65</i>&nbsp;    }
+<i>66</i>&nbsp;
+<i>67</i>&nbsp;    public int getSocialSecurityNumber() {
+<b class="nc"><i>68</i>&nbsp;        return socialSecurityNumber;</b>
+<i>69</i>&nbsp;    }
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;    public boolean isActive() {
+<b class="nc"><i>72</i>&nbsp;        return active;</b>
+<i>73</i>&nbsp;    }
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;    public long getLicenseNo() {
+<b class="nc"><i>76</i>&nbsp;        return licenseNo;</b>
+<i>77</i>&nbsp;    }
+<i>78</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-11-23 11:17</div>
+</div>
+</body>
+</html>

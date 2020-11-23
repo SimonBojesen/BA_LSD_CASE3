@@ -10,6 +10,7 @@ import booking.eto.NotFoundException;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import booking.servicelayer.ContractImpl;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -74,4 +75,111 @@ public class ContractImplTest
         assertEquals(employeeDetails, booking.getEmployeeDetails());
         assertEquals(carSummary, booking.getCar());
     }
+
+    @Test
+    void calculateFeeTest_PickupAndDeliveryAreTheSame() throws InvalidInputException {
+        //arrange
+        var pickupAddress = new Address("pickupVej",9999,"pickupCity");
+        var pickupPlace = new Place("airport",pickupAddress,true);
+        var deliveryAddress = new Address("pickupVej",9999,"pickupCity");
+        var deliveryPlace = new Place("airport",deliveryAddress,true);
+        var bookingCriteria = new BookingCriteria(pickupPlace,deliveryPlace,null,null);
+
+        //act
+        var fee =  contractImpl.calculateFee(bookingCriteria);
+
+        //assert
+        assertEquals(0.0,fee);
+    }
+
+    @Test
+    void calculateFeeTest_MaxFee() throws InvalidInputException {
+        //arrange
+        var pickupAddress = new Address("pickupVej",9999,"pickupCity");
+        var pickupPlace = new Place("airport",pickupAddress,true);
+        var deliveryAddress = new Address("deliveryVej",8888,"deliveryCity");
+        var deliveryPlace = new Place("hotel",deliveryAddress,true);
+        var bookingCriteria = new BookingCriteria(pickupPlace,deliveryPlace,null,null);
+
+        //act
+        var fee =  contractImpl.calculateFee(bookingCriteria);
+
+        //assert
+        assertEquals(100.0,fee);
+    }
+
+    @Test
+    void calculateFeeTest_OnlyStreetNameDiffers() throws InvalidInputException {
+        //arrange
+        var pickupAddress = new Address("pickupVej",9999,"pickupCity");
+        var pickupPlace = new Place("airport",pickupAddress,true);
+        var deliveryAddress = new Address("deliveryVej",9999,"pickupCity");
+        var deliveryPlace = new Place("hotel",deliveryAddress,true);
+        var bookingCriteria = new BookingCriteria(pickupPlace,deliveryPlace,null,null);
+
+        //act
+        var fee =  contractImpl.calculateFee(bookingCriteria);
+
+        //assert
+        assertEquals(25.0,fee);
+    }
+
+    @Test
+    void calculateFeeTest_StreetNameAndCityDiffers() throws InvalidInputException {
+        //arrange
+        var pickupAddress = new Address("pickupVej",9999,"pickupCity");
+        var pickupPlace = new Place("airport",pickupAddress,true);
+        var deliveryAddress = new Address("deliveryVej",9999,"deliveryCity");
+        var deliveryPlace = new Place("hotel",deliveryAddress,true);
+        var bookingCriteria = new BookingCriteria(pickupPlace,deliveryPlace,null,null);
+
+        //act
+        var fee =  contractImpl.calculateFee(bookingCriteria);
+
+        //assert
+        assertEquals(50.0,fee);
+    }
+
+    @Test
+    void calculateFeeTest_ThrowExceptionIfPickupPlaceIsNull() throws InvalidInputException {
+        //arrange
+        var deliveryAddress = new Address("deliveryVej",9999,"deliveryCity");
+        var deliveryPlace = new Place("hotel",deliveryAddress,true);
+        var bookingCriteria = new BookingCriteria(null,deliveryPlace,null,null);
+
+        //act
+
+
+        //assert
+        Assertions.assertThrows(InvalidInputException.class, () -> {
+            var fee =  contractImpl.calculateFee(bookingCriteria);
+        });
+    }
+
+    @Test
+    void calculateFeeTest_ThrowExceptionIfDeliveryPlaceIsNull() throws InvalidInputException {
+        //arrange
+        var pickupAddress = new Address("pickupVej",9999,"pickupCity");
+        var pickupPlace = new Place("airport",pickupAddress,true);
+        var bookingCriteria = new BookingCriteria(pickupPlace,null,null,null);
+
+        //assert
+        Assertions.assertThrows(InvalidInputException.class, () -> {
+            var fee =  contractImpl.calculateFee(bookingCriteria);
+        });
+    }
+
+    @Test
+    void calculateFeeTest_ThrowExceptionIfBothPlacesAreNull() throws InvalidInputException {
+        //arrange
+        var bookingCriteria = new BookingCriteria(null,null,null,null);
+
+        //assert
+        Assertions.assertThrows(InvalidInputException.class, () -> {
+            var fee =  contractImpl.calculateFee(bookingCriteria);
+        });
+    }
+
+
+
 }
