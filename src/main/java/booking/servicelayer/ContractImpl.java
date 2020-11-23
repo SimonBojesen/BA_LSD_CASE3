@@ -67,6 +67,7 @@ public class ContractImpl implements booking.Contract {
                 return 100.0;
             }
         } else {
+            //Put logger
             throw new InvalidInputException("pickup place or delivery place must not be null");
         }
     }
@@ -118,6 +119,7 @@ public class ContractImpl implements booking.Contract {
             bookingToSave = bookingRepository.save(bookingToSave);
             booking = new BookingDetails(bookingToSave.getId(), bookingDetails.getCar(), bookingDetails.getDriverDetails(), bookingDetails.getEmployeeDetails(), bookingDetails.getBookingCriteria(), bookingDetails.getFee(), bookingDetails.getPrice());
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new PersistanceFailedException("An error happened while saving to DB");
         }
 
