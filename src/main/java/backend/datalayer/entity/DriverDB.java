@@ -1,5 +1,7 @@
 package backend.datalayer.entity;
 
+import booking.entity.Driver;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -62,5 +64,10 @@ public class DriverDB {
 
     public long getLicenseNo() {
         return licenseNo;
+    }
+
+    public Driver toDriver()
+    {
+        return new Driver(name, addressDB.toAddress(), email, dateOfBirth, socialSecurityNumber, active, licenseNo);
     }
 }

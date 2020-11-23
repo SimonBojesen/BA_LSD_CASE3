@@ -2,6 +2,7 @@ package backend.dao;
 
 import backend.datalayer.dao.AddressRepository;
 import backend.datalayer.entity.AddressDB;
+import booking.entity.Address;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-public class AddressDBRepositoryTest {
+public class AddressRepositoryTest
+{
     //Class to be tested
     @Autowired
     private AddressRepository addressRepository;
@@ -27,8 +29,8 @@ public class AddressDBRepositoryTest {
 
     @BeforeEach
     public void setup(){
-        sampleAddressDB = new AddressDB("Bumlevej 41", 3000, "Bumleby");
-        persistedAddressDB = new AddressDB("testvej 69", 6969, "1234");
+        sampleAddressDB = new AddressDB(new Address("Bumlevej 41", 3000, "Bumleby"));
+        persistedAddressDB = new AddressDB(new Address("testvej 69", 6969, "1234"));
         entityManager.persist(persistedAddressDB);
         entityManager.flush();
     }

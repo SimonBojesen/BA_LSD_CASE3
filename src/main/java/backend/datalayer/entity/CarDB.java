@@ -1,6 +1,7 @@
 package backend.datalayer.entity;
 
 import backend.datalayer.constants.Place;
+import booking.entity.Car;
 import booking.entity.Type;
 import com.sun.istack.Nullable;
 
@@ -21,6 +22,10 @@ public class CarDB {
     private Place place;
     @OneToOne
     private AddressDB station;
+    /*@OneToOne
+    private HotelDB hotelDB;
+    @OneToOne
+    private AirportDB airportDB;*/
 
     public CarDB(booking.entity.Car car, Place place, AddressDB station) {
         this.vin = car.getVin();
@@ -71,5 +76,11 @@ public class CarDB {
 
     public AddressDB getStation() {
         return station;
+    }
+
+    public Car toCar()
+    {
+        Car car = new Car(this.vin, this.licensePlate, this.type, this.price, this.noOfSeats, this.active);
+        return car;
     }
 }
