@@ -165,12 +165,12 @@ public class ContractImpl implements booking.Contract {
         switch(placeType)
         {
             case AIRPORT:
-                AirportDB airportDB = findAirportByAddress(addressDB);
+                AirportDB airportDB = airportRepository.findAirportDBByAddressDB(addressDB).get();
                 name = airportDB.getName();
                 active = airportDB.isActive();
                 break;
             case HOTEL:
-                HotelDB hotelDB = findHotelByAddress(addressDB);
+                HotelDB hotelDB = hotelRepository.findHotelDBByAddressDB(addressDB).get();
                 name = hotelDB.getName();
                 active = hotelDB.isActive();
                 break;
@@ -181,19 +181,5 @@ public class ContractImpl implements booking.Contract {
         return new Place(name, addressDB.toAddress(), active);
     }
 
-    private AirportDB findAirportByAddress(AddressDB addressDB)
-    {
-        AirportDB airportDB = new AirportDB();
-        airportDB.setAddress(addressDB);
-        Example<AirportDB> example = Example.of(airportDB);
-        return airportRepository.findOne(example).get();
-    }
 
-    private HotelDB findHotelByAddress(AddressDB addressDB)
-    {
-        HotelDB hotelDB = new HotelDB();
-        hotelDB.setAddress(addressDB);
-        Example<HotelDB> example = Example.of(hotelDB);
-        return hotelRepository.findOne(example).get();
-    }
 }

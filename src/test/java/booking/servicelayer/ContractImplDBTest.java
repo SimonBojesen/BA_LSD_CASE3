@@ -5,10 +5,9 @@ import booking.datalayer.entity.*;
 import booking.dto.*;
 import booking.entity.*;
 import booking.eto.InvalidInputException;
+import booking.eto.NotFoundException;
 import booking.eto.PersistanceFailedException;
 import booking.eto.UnavailableException;
-import booking.servicelayer.ContractImpl;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +34,7 @@ public class ContractImplDBTest {
     @Qualifier("ContractImpl")
     private ContractImpl contractImpl;
 
-    //TESTDATA
+    //Test data for entities from our contract
     Address address = new Address("testvej", 1111, "testby");
     Address address2 = new Address("testvej2", 11112, "testby2");
     Car car1 = new Car("", "testPlate", Type.B, 200.0, 2, false);
@@ -46,37 +45,49 @@ public class ContractImplDBTest {
     Airport airport = new Airport("Københavns Lufthavn", address2, true,  "123nrk");
     Employee employee = new Employee("martin", address2, "martin@martinson.dk", new Date(), 1234, true, "demo", "demo");
 
+    //Persisted test entities used in test
+    AddressDB persistedAddressDBHotel;
+    AddressDB persistedAddressDBAirport;
+    HotelDB persistedHotelDB;
+    AirportDB persistedAirportDB;
+    EmployeeDB persistedEmployeeDB;
+    DriverDB persistedDriverDB;
+    CarDB persistedCarDBAirport;
+    CarDB persistedCarHotel;
+    CarDB persistedCarNone;
+
+
     @BeforeEach
     public void setup(){
-        AddressDB sampleAddress = new AddressDB(address);
-        AddressDB sampleAddress2 = new AddressDB(address2);
-        sampleAddress = em.persist(sampleAddress);
-        sampleAddress2 = em.persist(sampleAddress2);
-        HotelDB sampleHotelDB = new HotelDB(hotel.getName(), sampleAddress, hotel.isActive(), hotel.getRating());
-        em.persist(sampleHotelDB);
-        AirportDB sampleAirportDB = new AirportDB(airport.getIATA(), airport.getName(), sampleAddress2, airport.isActive());
-        em.persist(sampleAirportDB);
-        DriverDB sampleDriver = new DriverDB(driver.getName(), sampleAddress, driver.getEmail(), driver.getDateOfBirth(), driver.getSocialSecurityNumber(), driver.isActive(), driver.getLicenseNo());
-        EmployeeDB sampleEmployee = new EmployeeDB(employee.getName(), sampleAddress2, employee.getEmail(), employee.getDateOfBirth(), employee.getSocialSecurityNumber(), employee.isActive(), employee.getUsername(), employee.getPassword());
-        em.persist(sampleDriver);
-        em.persist(sampleEmployee);
-        CarDB sampleCar = new CarDB(car1, booking.datalayer.constants.Place.AIRPORT, sampleAddress2);
-        CarDB sampleCar3 = new CarDB(car2, booking.datalayer.constants.Place.NONE, null);
-        CarDB sampleCar2 = new CarDB(car3, Place.HOTEL, sampleAddress);
-        em.persist(sampleCar);
-        em.persist(sampleCar3);
-        em.persist(sampleCar2);
+        persistedAddressDBHotel = new AddressDB(address);
+        persistedAddressDBAirport = new AddressDB(address2);
+        persistedAddressDBHotel = em.persist(persistedAddressDBHotel);
+        persistedAddressDBAirport = em.persist(persistedAddressDBAirport);
+        persistedHotelDB = new HotelDB(hotel.getName(), persistedAddressDBHotel, hotel.isActive(), hotel.getRating());
+        em.persist(persistedHotelDB);
+        persistedAirportDB = new AirportDB(airport.getIATA(), airport.getName(), persistedAddressDBAirport, airport.isActive());
+        em.persist(persistedAirportDB);
+        persistedDriverDB = new DriverDB(driver.getName(), persistedAddressDBHotel, driver.getEmail(), driver.getDateOfBirth(), driver.getSocialSecurityNumber(), driver.isActive(), driver.getLicenseNo());
+        persistedEmployeeDB = new EmployeeDB(employee.getName(), persistedAddressDBAirport, employee.getEmail(), employee.getDateOfBirth(), employee.getSocialSecurityNumber(), employee.isActive(), employee.getUsername(), employee.getPassword());
+        em.persist(persistedDriverDB);
+        em.persist(persistedEmployeeDB);
+        persistedCarDBAirport = new CarDB(car1, booking.datalayer.constants.Place.AIRPORT, persistedAddressDBAirport);
+        persistedCarHotel = new CarDB(car3, Place.HOTEL, persistedAddressDBHotel);
+        persistedCarNone = new CarDB(car2, booking.datalayer.constants.Place.NONE, null);
+        em.persist(persistedCarDBAirport);
+        em.persist(persistedCarHotel);
+        em.persist(persistedCarNone);
         em.flush();
     }
 
     @Test
     void saveBooking_WhereDriverExistTest() throws InvalidInputException, PersistanceFailedException, UnavailableException {
-        booking.entity.Place pickupplace = new booking.entity.Place("airport", address, true);
-        booking.entity.Place deliveryplace = new booking.entity.Place("hotel", address2, true);
-        BookingCriteria bookingCriteria = new BookingCriteria(pickupplace, deliveryplace, LocalDateTime.now(), LocalDateTime.now());
+        booking.entity.Place pickUpPlace = new booking.entity.Place("airport", address, true);
+        booking.entity.Place deliveryPlace = new booking.entity.Place("hotel", address2, true);
+        BookingCriteria bookingCriteria = new BookingCriteria(pickUpPlace, deliveryPlace, LocalDateTime.now(), LocalDateTime.now());
         DriverDetails driverDetails = new DriverDetails(driver, driver.getLicenseNo());
         EmployeeDetails employeeDetails = new EmployeeDetails(employee);
-        CarSummary carSummary = new CarSummary(car1, pickupplace);
+        CarSummary carSummary = new CarSummary(car1, pickUpPlace);
         BookingDetails booking = contractImpl.createBooking(bookingCriteria, car1.getPrice(), driverDetails, employeeDetails, carSummary);
 
         booking = contractImpl.saveBooking(booking);
@@ -85,18 +96,41 @@ public class ContractImplDBTest {
 
     @Test
     void saveBooking_WhereDriverNotExistTest() throws InvalidInputException, PersistanceFailedException, UnavailableException {
-        booking.entity.Place pickupplace = new booking.entity.Place("airport", address, true);
-        booking.entity.Place deliveryplace = new booking.entity.Place("hotel", address2, true);
-        BookingCriteria bookingCriteria = new BookingCriteria(pickupplace, deliveryplace, LocalDateTime.now(), LocalDateTime.now());
+        booking.entity.Place pickUpPlace = new booking.entity.Place("airport", address, true);
+        booking.entity.Place deliveryPlace = new booking.entity.Place("hotel", address2, true);
+        BookingCriteria bookingCriteria = new BookingCriteria(pickUpPlace, deliveryPlace, LocalDateTime.now(), LocalDateTime.now());
 
         Driver driver = new Driver("test", new Address("halløj", 9876, "goddav"), "test@test.dk", new Date(), 98756372, true, 987654321L);
         DriverDetails driverDetails = new DriverDetails(driver, driver.getLicenseNo());
 
         EmployeeDetails employeeDetails = new EmployeeDetails(employee);
-        CarSummary carSummary = new CarSummary(car1, pickupplace);
+        CarSummary carSummary = new CarSummary(car1, pickUpPlace);
         BookingDetails booking = contractImpl.createBooking(bookingCriteria, car1.getPrice(), driverDetails, employeeDetails, carSummary);
 
         booking = contractImpl.saveBooking(booking);
         assertNotNull(booking.getId());
     }
+
+    @Test
+    void findBooking_UsingHotelAddress() throws NotFoundException,InvalidInputException {
+        BookingDB persistedBooking = new BookingDB(persistedCarHotel, persistedDriverDB, persistedEmployeeDB, persistedAddressDBHotel,LocalDateTime.now(), LocalDateTime.now().minusDays(2), 20d, 30d);
+        em.persist(persistedBooking);
+        em.flush();
+
+        BookingIdentifier bookingIdentifier = new BookingIdentifier(persistedBooking.getId());
+        BookingDetails booking = contractImpl.findBooking(bookingIdentifier);
+        assertNotNull(booking.getId());
+    }
+
+    @Test
+    void findBooking_UsingAirportAddress() throws NotFoundException,InvalidInputException {
+        BookingDB persistedBooking = new BookingDB(persistedCarDBAirport, persistedDriverDB, persistedEmployeeDB, persistedAddressDBAirport,LocalDateTime.now(), LocalDateTime.now().minusDays(2), 20d, 30d);
+        em.persist(persistedBooking);
+        em.flush();
+        BookingIdentifier bookingIdentifier = new BookingIdentifier(persistedBooking.getId());
+        BookingDetails booking = contractImpl.findBooking(bookingIdentifier);
+        assertNotNull(booking.getId());
+    }
+
+
 }

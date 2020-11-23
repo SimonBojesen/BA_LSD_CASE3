@@ -385,7 +385,7 @@ public class ContractImplTest
         when(bookingDB.getPrice()).thenReturn(550.5);
         when(bookingDB.getId()).thenReturn(1L);
         when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(bookingDB));
-        when(hotelRepository.findOne(any(Example.class))).thenReturn(Optional.of(hotelDB));
+        when(hotelRepository.findHotelDBByAddressDB(any(AddressDB.class))).thenReturn(Optional.of(hotelDB));
 
         // Act
         contractImpl.findBooking(new BookingIdentifier(1L));
@@ -411,7 +411,7 @@ public class ContractImplTest
         when(bookingDB.getExtraFee()).thenReturn(7.5);
         when(bookingDB.getId()).thenReturn(1L);
         when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(bookingDB));
-        when(hotelRepository.findOne(any(Example.class))).thenReturn(Optional.of(hotelDB));
+        when(hotelRepository.findHotelDBByAddressDB(any(AddressDB.class))).thenReturn(Optional.of(hotelDB));
 
         // Act
         BookingDetails result = contractImpl.findBooking(new BookingIdentifier(4L));
