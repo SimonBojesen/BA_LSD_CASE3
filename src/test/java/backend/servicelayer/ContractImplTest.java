@@ -4,7 +4,6 @@ import backend.datalayer.dao.AirportRepository;
 import backend.datalayer.dao.BookingRepository;
 import backend.datalayer.dao.CarRepository;
 import backend.datalayer.dao.HotelRepository;
-import backend.datalayer.dao.impl.CarRepositoryImpl;
 import backend.datalayer.entity.*;
 import booking.Contract;
 import booking.dto.BookingCriteria;
@@ -16,18 +15,12 @@ import booking.eto.InvalidInputException;
 import booking.eto.NotFoundException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.internal.matchers.InstanceOf;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.domain.Example;
 
-import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -45,20 +38,29 @@ public class ContractImplTest
     Contract contractImpl = new ContractImpl(carRepository, bookingRepository, airportRepository, hotelRepository);
 
     //Test data
-    BookingCriteria bookingCriteria;
-    Place samplePlace;
-    Address sampleAddress;
-    Car sampleCar;
-    CarSummary sampleCarSummary;
+    Car car = new Car("asdf", "bif1964", Type.E, 200.0, 5, true);
+    Address hotelAddress = new Address("Ellehammervej yy", 2300, "København S");
+    Address driverAddress = new Address("Hovedgaden", 5000, "Odense");
+    Address deliveryAddress = new Address("Ellehøjvej", 2800, "Lyngby");
+    Place pickupPlace = new Place("Hilton CPH airport", hotelAddress, true);
+    Place deliveryPlace = new Place("Butikken", deliveryAddress, true);
+    CarSummary carSummary = new CarSummary(car, pickupPlace);
+
+    AddressDB hotelAddressDB = new AddressDB(hotelAddress);
+    AddressDB driverAddressDB = new AddressDB(driverAddress);
+    AddressDB deliveryAddressDB = new AddressDB(deliveryAddress);
+
+    HotelDB hotelDB = new HotelDB(pickupPlace.getName(), hotelAddressDB, true, Rating.FIVE);
+
+
+    CarDB carDB = new CarDB(car, backend.datalayer.constants.Place.HOTEL, hotelAddressDB);
+    DriverDB driverDB = new DriverDB("Anders Sand", driverAddressDB, "anders@sand.nu", new Date(), 123, true, 543L);
+
+    BookingCriteria bookingCriteria = new BookingCriteria(pickupPlace, deliveryPlace, LocalDateTime.now(), LocalDateTime.now());
+
 
     @BeforeEach
     public void setup() {
-        sampleAddress = new Address("testvej", 1111, "testby");
-        sampleCar = new Car("", "", Type.B, 200.0, 2, false);
-
-        samplePlace = new Place("", sampleAddress, true);
-        sampleCarSummary = new CarSummary(sampleCar, samplePlace);
-        bookingCriteria = new BookingCriteria(samplePlace, samplePlace, LocalDateTime.now(), LocalDateTime.now());
     }
 
     @Test
@@ -77,7 +79,7 @@ public class ContractImplTest
     {
         // Arrange
         Collection<CarSummary> carList = new ArrayList<>();
-        carList.add(sampleCarSummary);
+        carList.add(carSummary);
         when(carRepository.findAvailableCars(any(BookingCriteria.class))).thenReturn(carList);
 
         // Act
@@ -91,22 +93,6 @@ public class ContractImplTest
     public void mustCallBookingRepositoryWhenFindingBooking() throws NotFoundException, InvalidInputException, NoSuchFieldException, IllegalAccessException
     {
         // Arrange
-        Car car = new Car("asdf", "bif1964", Type.E, 200.0, 5, true);
-        Address hotelAddress = new Address("Ellehammervej yy", 2300, "København S");
-        Address driverAddress = new Address("Hovedgaden", 5000, "Odense");
-        Address deliveryAddress = new Address("Ellehøjvej", 2800, "Lyngby");
-        Place place = new Place("Hilton CPH airport", hotelAddress, true);
-
-        AddressDB hotelAddressDB = new AddressDB(hotelAddress);
-        AddressDB driverAddressDB = new AddressDB(driverAddress);
-        AddressDB deliveryAddressDB = new AddressDB(deliveryAddress);
-        HotelDB hotelDB = new HotelDB(place.getName(), hotelAddressDB, true, Rating.FIVE);
-
-
-        CarDB carDB = new CarDB(car, backend.datalayer.constants.Place.HOTEL, hotelAddressDB);
-        DriverDB driverDB = new DriverDB("Anders Sand", driverAddressDB, "anders@sand.nu", new Date(), 123, true, 543L);
-        //EmployeeDB employeeDB = new EmployeeDB("Ansat 1", employeeAddressDB, "viudlejer@bil.er", new Date(), 543, true, "root", "admin");
-
         BookingDB bookingDB = mock(BookingDB.class);
         when(bookingDB.getCar()).thenReturn(carDB);
         when(bookingDB.getPickUpDate()).thenReturn(new Date());
@@ -132,24 +118,6 @@ public class ContractImplTest
     {
         // Arrange
         var expected = BookingDetails.class;
-        // Arrange
-        Car car = new Car("asdf", "bif1964", Type.E, 200.0, 5, true);
-        Address hotelAddress = new Address("Ellehammervej yy", 2300, "København S");
-        Address driverAddress = new Address("Hovedgaden", 5000, "Odense");
-        Address deliveryAddress = new Address("Ellehøjvej", 2800, "Lyngby");
-        Place place = new Place("Hilton CPH airport", hotelAddress, true);
-
-        AddressDB hotelAddressDB = new AddressDB(hotelAddress);
-        AddressDB driverAddressDB = new AddressDB(driverAddress);
-        AddressDB deliveryAddressDB = new AddressDB(deliveryAddress);
-
-        HotelDB hotelDB = new HotelDB(place.getName(), hotelAddressDB, true, Rating.FIVE);
-
-
-        CarDB carDB = new CarDB(car, backend.datalayer.constants.Place.HOTEL, hotelAddressDB);
-        DriverDB driverDB = new DriverDB("Anders Sand", driverAddressDB, "anders@sand.nu", new Date(), 123, true, 543L);
-
-
         BookingDB bookingDB = mock(BookingDB.class);
         when(bookingDB.getCar()).thenReturn(carDB);
         when(bookingDB.getPickUpDate()).thenReturn(new Date());
@@ -158,6 +126,7 @@ public class ContractImplTest
         when(bookingDB.getDeliveryPlace()).thenReturn(deliveryAddressDB);
         when(bookingDB.getDrivers()).thenReturn(driverDB);
         when(bookingDB.getPrice()).thenReturn(550.5);
+        when(bookingDB.getExtraFee()).thenReturn(7.5);
         when(bookingDB.getId()).thenReturn(1L);
 
         when(bookingRepository.findBooking(anyLong())).thenReturn(bookingDB);
