@@ -181,8 +181,6 @@ public class ContractImpl implements booking.Contract {
             default:
                 break;
         }
-        AirportDB airportDB = airportRepository.findAirportDBByAddressDB(addressDB).get();
-
 
         return new Place(name, addressDB.toAddress(), active);
     }
