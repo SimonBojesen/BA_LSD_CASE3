@@ -8,6 +8,7 @@ import booking.eto.InvalidInputException;
 import booking.eto.PersistanceFailedException;
 import booking.eto.UnavailableException;
 import booking.servicelayer.ContractImpl;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +70,7 @@ public class ContractImplDBTest {
     }
 
     @Test
-    void saveBookingTest() throws InvalidInputException, PersistanceFailedException, UnavailableException {
+    void saveBooking_WhereDriverExistTest() throws InvalidInputException, PersistanceFailedException, UnavailableException {
         booking.entity.Place pickupplace = new booking.entity.Place("airport", address, true);
         booking.entity.Place deliveryplace = new booking.entity.Place("hotel", address2, true);
         BookingCriteria bookingCriteria = new BookingCriteria(pickupplace, deliveryplace, LocalDateTime.now(), LocalDateTime.now());
@@ -82,5 +83,20 @@ public class ContractImplDBTest {
         assertNotNull(booking.getId());
     }
 
+    @Test
+    void saveBooking_WhereDriverNotExistTest() throws InvalidInputException, PersistanceFailedException, UnavailableException {
+        booking.entity.Place pickupplace = new booking.entity.Place("airport", address, true);
+        booking.entity.Place deliveryplace = new booking.entity.Place("hotel", address2, true);
+        BookingCriteria bookingCriteria = new BookingCriteria(pickupplace, deliveryplace, LocalDateTime.now(), LocalDateTime.now());
 
+        Driver driver = new Driver("test", new Address("halløj", 9876, "goddav"), "test@test.dk", new Date(), 98756372, true, 987654321L);
+        DriverDetails driverDetails = new DriverDetails(driver, driver.getLicenseNo());
+
+        EmployeeDetails employeeDetails = new EmployeeDetails(employee);
+        CarSummary carSummary = new CarSummary(car1, pickupplace);
+        BookingDetails booking = contractImpl.createBooking(bookingCriteria, car1.getPrice(), driverDetails, employeeDetails, carSummary);
+
+        booking = contractImpl.saveBooking(booking);
+        assertNotNull(booking.getId());
+    }
 }
