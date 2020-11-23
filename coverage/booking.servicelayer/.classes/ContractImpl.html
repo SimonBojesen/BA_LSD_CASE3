@@ -1,0 +1,222 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ContractImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">booking.servicelayer</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ContractImpl (booking.servicelayer)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ContractImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (4/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    70,7%
+  </span>
+  <span class="absValue">
+    (41/ 58)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package booking.servicelayer;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import booking.datalayer.dao.*;
+<i>4</i>&nbsp;import booking.datalayer.entity.*;
+<i>5</i>&nbsp;import booking.servicelayer.util.HelperFunctions;
+<i>6</i>&nbsp;import booking.dto.*;
+<i>7</i>&nbsp;import booking.entity.Address;
+<i>8</i>&nbsp;import booking.eto.InvalidInputException;
+<i>9</i>&nbsp;import booking.eto.NotFoundException;
+<i>10</i>&nbsp;import booking.eto.PersistanceFailedException;
+<i>11</i>&nbsp;import booking.eto.UnavailableException;
+<i>12</i>&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+<i>13</i>&nbsp;import org.springframework.stereotype.Service;
+<i>14</i>&nbsp;
+<i>15</i>&nbsp;import java.sql.SQLException;
+<i>16</i>&nbsp;import java.util.ArrayList;
+<i>17</i>&nbsp;import java.util.Collection;
+<i>18</i>&nbsp;import java.util.List;
+<i>19</i>&nbsp;import java.util.Optional;
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;@Service(&quot;ContractImpl&quot;)
+<i>22</i>&nbsp;public class ContractImpl implements booking.Contract {
+<i>23</i>&nbsp;    private AddressRepository addressRepository;
+<i>24</i>&nbsp;    private EmployeeRepository employeeRepository;
+<i>25</i>&nbsp;    private DriverRepository driverRepository;
+<i>26</i>&nbsp;    private CarRepository carRepository;
+<i>27</i>&nbsp;    private BookingRepository bookingRepository;
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;    @Autowired
+<b class="fc"><i>30</i>&nbsp;    public ContractImpl(AddressRepository addressRepository, EmployeeRepository employeeRepository, DriverRepository driverRepository, CarRepository carRepository, BookingRepository bookingRepository) {</b>
+<b class="fc"><i>31</i>&nbsp;        this.addressRepository = addressRepository;</b>
+<b class="fc"><i>32</i>&nbsp;        this.employeeRepository = employeeRepository;</b>
+<b class="fc"><i>33</i>&nbsp;        this.driverRepository = driverRepository;</b>
+<b class="fc"><i>34</i>&nbsp;        this.carRepository = carRepository;</b>
+<b class="fc"><i>35</i>&nbsp;        this.bookingRepository = bookingRepository;</b>
+<b class="fc"><i>36</i>&nbsp;    }</b>
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;    public Collection&lt;CarSummary&gt; listAvailableCars(BookingCriteria bookingCriteria) throws NotFoundException, InvalidInputException {
+<i>40</i>&nbsp;        //carRepository.findAvailableCars(bookingCriteria);
+<b class="nc"><i>41</i>&nbsp;        List&lt;CarSummary&gt; cars = new ArrayList();</b>
+<b class="nc"><i>42</i>&nbsp;        return cars;</b>
+<i>43</i>&nbsp;    }
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;    //Martin vil tænke over denne
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;    /**
+<i>48</i>&nbsp;     * @param bookingCriteria
+<i>49</i>&nbsp;     * @return
+<i>50</i>&nbsp;     * @throws InvalidInputException
+<i>51</i>&nbsp;     */
+<i>52</i>&nbsp;    public Double calculateFee(BookingCriteria bookingCriteria) throws InvalidInputException {
+<b class="fc"><i>53</i>&nbsp;        var delivery = bookingCriteria.getDeliveryPlace();</b>
+<b class="fc"><i>54</i>&nbsp;        var pickup = bookingCriteria.getPickUpPlace();</b>
+<b class="fc"><i>55</i>&nbsp;        if (delivery != null &amp;&amp; pickup != null) {</b>
+<b class="fc"><i>56</i>&nbsp;            if (delivery.getAddress().getPostalCode() == pickup.getAddress().getPostalCode()) {</b>
+<b class="fc"><i>57</i>&nbsp;                if (delivery.getAddress().getCity().equalsIgnoreCase(pickup.getAddress().getCity())) {</b>
+<b class="fc"><i>58</i>&nbsp;                    if (delivery.getAddress().getStreetAddress().equalsIgnoreCase(pickup.getAddress().getStreetAddress())) {</b>
+<b class="fc"><i>59</i>&nbsp;                        return 0.0;</b>
+<i>60</i>&nbsp;                    } else {
+<b class="fc"><i>61</i>&nbsp;                        return 25.0;</b>
+<i>62</i>&nbsp;                    }
+<i>63</i>&nbsp;                } else {
+<b class="fc"><i>64</i>&nbsp;                    return 50.0;</b>
+<i>65</i>&nbsp;                }
+<i>66</i>&nbsp;            } else {
+<b class="fc"><i>67</i>&nbsp;                return 100.0;</b>
+<i>68</i>&nbsp;            }
+<i>69</i>&nbsp;        } else {
+<b class="fc"><i>70</i>&nbsp;            throw new InvalidInputException(&quot;pickup place or delivery place must not be null&quot;);</b>
+<i>71</i>&nbsp;        }
+<i>72</i>&nbsp;    }
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;    public BookingDetails createBooking(BookingCriteria bookingCriteria, Double price, DriverDetails driverDetails, EmployeeDetails employeeDetails, CarSummary carSummary) throws InvalidInputException {
+<i>75</i>&nbsp;        try {
+<b class="fc"><i>76</i>&nbsp;            HelperFunctions.nullCheck(bookingCriteria);</b>
+<b class="fc"><i>77</i>&nbsp;            HelperFunctions.nullCheck(price);</b>
+<b class="fc"><i>78</i>&nbsp;            HelperFunctions.nullCheck(driverDetails);</b>
+<b class="fc"><i>79</i>&nbsp;            HelperFunctions.nullCheck(employeeDetails);</b>
+<b class="fc"><i>80</i>&nbsp;            HelperFunctions.nullCheck(carSummary);</b>
+<b class="nc"><i>81</i>&nbsp;        } catch (Exception e) {</b>
+<b class="nc"><i>82</i>&nbsp;            e.printStackTrace();</b>
+<b class="nc"><i>83</i>&nbsp;            throw new InvalidInputException(&quot;We found null values in provided input&quot;);</b>
+<b class="fc"><i>84</i>&nbsp;        }</b>
+<i>85</i>&nbsp;
+<b class="fc"><i>86</i>&nbsp;        Double fee = calculateFee(bookingCriteria);</b>
+<b class="fc"><i>87</i>&nbsp;        return new BookingDetails(null, carSummary, driverDetails, employeeDetails, bookingCriteria, fee, price);</b>
+<i>88</i>&nbsp;    }
+<i>89</i>&nbsp;
+<i>90</i>&nbsp;    public BookingDetails saveBooking(BookingDetails bookingDetails) throws PersistanceFailedException, UnavailableException {
+<i>91</i>&nbsp;        BookingDetails booking;
+<b class="fc"><i>92</i>&nbsp;        Address deliveryPlace = bookingDetails.getBookingCriteria().getDeliveryPlace().getAddress();</b>
+<i>93</i>&nbsp;
+<b class="fc"><i>94</i>&nbsp;        Optional&lt;DriverDB&gt; driver = driverRepository.findByLicenseNo(bookingDetails.getDriverDetails().getLicenseNo());</b>
+<b class="fc"><i>95</i>&nbsp;        Optional&lt;CarDB&gt; car = carRepository.findByLicensePlate(bookingDetails.getCar().getCar().getLicensePlate());</b>
+<b class="fc"><i>96</i>&nbsp;        Optional&lt;EmployeeDB&gt; employee = employeeRepository.findBySocialSecurityNumber(bookingDetails.getEmployeeDetails().getSocialSecurityNumber());</b>
+<b class="fc"><i>97</i>&nbsp;        Optional&lt;AddressDB&gt; deliveryStation = addressRepository.findByStreetAddressAndCityAndPostalCode(deliveryPlace.getStreetAddress(), deliveryPlace.getCity(), deliveryPlace.getPostalCode());</b>
+<i>98</i>&nbsp;
+<b class="fc"><i>99</i>&nbsp;        String notfound = &quot; is not found&quot;;</b>
+<b class="fc"><i>100</i>&nbsp;        if (!car.isPresent()) {</b>
+<b class="nc"><i>101</i>&nbsp;            throw new UnavailableException(&quot;Car&quot; + notfound);</b>
+<i>102</i>&nbsp;        }
+<b class="fc"><i>103</i>&nbsp;        if (!employee.isPresent()) {</b>
+<b class="nc"><i>104</i>&nbsp;            throw new UnavailableException(&quot;Emlployee&quot; + notfound);</b>
+<i>105</i>&nbsp;        }
+<b class="fc"><i>106</i>&nbsp;        if (!deliveryStation.isPresent()) {</b>
+<b class="nc"><i>107</i>&nbsp;            throw new UnavailableException(&quot;Delivery station&quot; + notfound);</b>
+<i>108</i>&nbsp;        }
+<i>109</i>&nbsp;
+<i>110</i>&nbsp;        try {
+<b class="fc"><i>111</i>&nbsp;            if (!driver.isPresent()) {</b>
+<b class="nc"><i>112</i>&nbsp;                AddressDB addressToSave = new AddressDB(bookingDetails.getDriverDetails().getDriver().getAddress());</b>
+<b class="nc"><i>113</i>&nbsp;                addressToSave = addressRepository.save(addressToSave);</b>
+<b class="nc"><i>114</i>&nbsp;                DriverDB driverToSave = new DriverDB(bookingDetails.getDriverDetails().getDriver(), addressToSave);</b>
+<b class="nc"><i>115</i>&nbsp;                driver = Optional.of(driverRepository.save(driverToSave));</b>
+<i>116</i>&nbsp;            }
+<b class="fc"><i>117</i>&nbsp;            BookingDB bookingToSave = new BookingDB(car.get(), driver.get(), employee.get(), deliveryStation.get(), bookingDetails.getBookingCriteria().getPickUpTime(), bookingDetails.getBookingCriteria().getDeliveryTime(), bookingDetails.getPrice(), bookingDetails.getFee());</b>
+<b class="fc"><i>118</i>&nbsp;            bookingToSave = bookingRepository.save(bookingToSave);</b>
+<b class="fc"><i>119</i>&nbsp;            booking = new BookingDetails(bookingToSave.getId(), bookingDetails.getCar(), bookingDetails.getDriverDetails(), bookingDetails.getEmployeeDetails(), bookingDetails.getBookingCriteria(), bookingDetails.getFee(), bookingDetails.getPrice());</b>
+<b class="nc"><i>120</i>&nbsp;        } catch (Exception ex) {</b>
+<b class="nc"><i>121</i>&nbsp;            throw new PersistanceFailedException(&quot;An error happened while saving to DB&quot;);</b>
+<b class="fc"><i>122</i>&nbsp;        }</b>
+<i>123</i>&nbsp;
+<b class="fc"><i>124</i>&nbsp;        return booking;</b>
+<i>125</i>&nbsp;    }
+<i>126</i>&nbsp;
+<i>127</i>&nbsp;    public boolean cancelBooking(BookingIdentifier bookingIdentifier) throws PersistanceFailedException, NotFoundException, UnavailableException, InvalidInputException {
+<b class="nc"><i>128</i>&nbsp;        return false;</b>
+<i>129</i>&nbsp;    }
+<i>130</i>&nbsp;
+<i>131</i>&nbsp;    public BookingDetails endBooking(BookingIdentifier bookingIdentifier) throws PersistanceFailedException, NotFoundException, UnavailableException, InvalidInputException {
+<b class="nc"><i>132</i>&nbsp;        return null;</b>
+<i>133</i>&nbsp;    }
+<i>134</i>&nbsp;
+<i>135</i>&nbsp;    //Claus vil kigge på denne :)
+<i>136</i>&nbsp;    public BookingDetails findBooking(BookingIdentifier bookingIdentifier) throws NotFoundException, InvalidInputException {
+<b class="nc"><i>137</i>&nbsp;        return null;</b>
+<i>138</i>&nbsp;    }
+<i>139</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-11-23 11:17</div>
+</div>
+</body>
+</html>
