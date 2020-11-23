@@ -2,6 +2,7 @@ package booking.servicelayer;
 
 import booking.datalayer.dao.*;
 import booking.datalayer.entity.*;
+import booking.entity.Place;
 import booking.servicelayer.util.HelperFunctions;
 import booking.dto.*;
 import booking.entity.Address;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -119,6 +121,7 @@ public class ContractImpl implements booking.Contract {
             bookingToSave = bookingRepository.save(bookingToSave);
             booking = new BookingDetails(bookingToSave.getId(), bookingDetails.getCar(), bookingDetails.getDriverDetails(), bookingDetails.getEmployeeDetails(), bookingDetails.getBookingCriteria(), bookingDetails.getFee(), bookingDetails.getPrice());
         } catch (Exception ex) {
+            //should be logged
             ex.printStackTrace();
             throw new PersistanceFailedException("An error happened while saving to DB");
         }
@@ -127,15 +130,50 @@ public class ContractImpl implements booking.Contract {
     }
 
     public boolean cancelBooking(BookingIdentifier bookingIdentifier) throws PersistanceFailedException, NotFoundException, UnavailableException, InvalidInputException {
-        return false;
+        BookingDB bookingToCancel = checkBookingExistAndInputNotNull(bookingIdentifier);
+        //should be logged
+        if (bookingToCancel.getPickUpDate().isBefore(LocalDateTime.now()))
+            throw new UnavailableException("The booking can't be cancelled as it already started");
+        try {
+            bookingRepository.delete(bookingToCancel);
+            return true;
+        } catch (Exception ex) {
+            //should be logged
+            throw new PersistanceFailedException("Failed to delete booking");
+        }
     }
 
     public BookingDetails endBooking(BookingIdentifier bookingIdentifier) throws PersistanceFailedException, NotFoundException, UnavailableException, InvalidInputException {
-        return null;
+        BookingDB bookingToEnd = checkBookingExistAndInputNotNull(bookingIdentifier);
+        if (bookingToEnd.getDeliveryDate().isBefore(LocalDateTime.now())) throw new UnavailableException("Booking is still in progress");
+        try {
+            bookingToEnd.setEnded(true);
+            bookingRepository.save(bookingToEnd);
+
+            return null;
+        } catch(Exception ex) {
+            //should be logged
+            throw new PersistanceFailedException("Failed to update booking");
+        }
     }
 
     //Claus vil kigge på denne :)
     public BookingDetails findBooking(BookingIdentifier bookingIdentifier) throws NotFoundException, InvalidInputException {
         return null;
     }
+
+    private BookingDB checkBookingExistAndInputNotNull(BookingIdentifier bookingIdentifier) throws NotFoundException, InvalidInputException {
+        if (bookingIdentifier != null && bookingIdentifier.getId() > 0) {
+            try {
+                return bookingRepository.findById(bookingIdentifier.getId()).get();
+            } catch (Exception ex) {
+                //should be logged
+                throw new NotFoundException("Failed to find booking");
+            }
+        } else {
+            //should be logged
+            throw new InvalidInputException("Given id is either null or 0");
+        }
+    }
+
 }

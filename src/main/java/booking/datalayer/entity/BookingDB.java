@@ -1,5 +1,10 @@
 package booking.datalayer.entity;
 
+import booking.dto.BookingDetails;
+import booking.dto.CarSummary;
+import booking.entity.Place;
+import ch.qos.logback.core.joran.action.IADataForComplexProperty;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -23,6 +28,7 @@ public class BookingDB {
     private LocalDateTime deliveryDate;
     private Double price;
     private Double extraFee;
+    private boolean ended;
 
     public BookingDB(CarDB car, DriverDB driver, EmployeeDB employee, AddressDB deliveryPlace, LocalDateTime pickUpDate, LocalDateTime deliveryDate, Double price, Double extraFee) {
         this.car = car;
@@ -38,6 +44,29 @@ public class BookingDB {
 
     public BookingDB() {
 
+    }
+
+    /*public BookingDetails convertToBookingDetails(BookingDB bookingToConvert, Place place){
+        if (bookingToConvert.getCar().getPlace() == booking.datalayer.constants.Place.NONE) {
+
+        } else if (bookingToConvert.getCar().getPlace() == booking.datalayer.constants.Place.HOTEL) {
+
+        } else {
+
+        }
+
+        Place place = new Place(bookingToConvert.getPickUpPlace();
+        CarSummary carSummary = new CarSummary(bookingToConvert.getCar(), place)
+
+        BookingDetails bookingDetails = new BookingDetails(bookingToConvert.getId(),);
+    }*/
+
+    public boolean isEnded() {
+        return ended;
+    }
+
+    public void setEnded(boolean ended) {
+        this.ended = ended;
     }
 
     public Long getId() {
