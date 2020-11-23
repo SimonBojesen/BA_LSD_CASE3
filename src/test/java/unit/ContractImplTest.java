@@ -60,6 +60,7 @@ public class ContractImplTest
     private Airport airport;
     private Employee employee;
 
+    // Simple DTOs from contract.
     Car car = new Car("asdf", "bif1964", Type.E, 200.0, 5, true);
     Address hotelAddress = new Address("Ellehammervej yy", 2300, "København S");
     Address driverAddress = new Address("Hovedgaden", 5000, "Odense");
@@ -67,22 +68,20 @@ public class ContractImplTest
     Address employeeAddress = new Address("Ved vejen 2", 6000, "Kolding");
     Place pickupPlace = new Place("Hilton CPH airport", hotelAddress, true);
     Place deliveryPlace = new Place("Butikken", deliveryAddress, true);
-    CarSummary carSummary = new CarSummary(car, pickupPlace);
 
+    // Composite DTOs from contract.
+    CarSummary carSummary = new CarSummary(car, pickupPlace);
+    BookingCriteria bookingCriteria = new BookingCriteria(pickupPlace, deliveryPlace, LocalDateTime.now(), LocalDateTime.now());
+
+    // DAOs from backend.
     AddressDB hotelAddressDB = new AddressDB(hotelAddress);
     AddressDB driverAddressDB = new AddressDB(driverAddress);
     AddressDB deliveryAddressDB = new AddressDB(deliveryAddress);
     AddressDB employeeAddressDB = new AddressDB(employeeAddress);
-
-    HotelDB hotelDB = new HotelDB(pickupPlace.getName(), hotelAddressDB, true, Rating.FIVE);
-
     CarDB carDB = new CarDB(car, booking.datalayer.constants.Place.HOTEL, hotelAddressDB);
+    HotelDB hotelDB = new HotelDB(pickupPlace.getName(), hotelAddressDB, true, Rating.FIVE);
     DriverDB driverDB = new DriverDB("Anders Sand", driverAddressDB, "anders@sand.nu", new Date(), 123, true, 543L);
     EmployeeDB employeeDB = new EmployeeDB("Ansat 1", employeeAddressDB, "vilejer@biler.ud", new Date(), 234234, true, "demo", "demon");
-
-    BookingCriteria bookingCriteria = new BookingCriteria(pickupPlace, deliveryPlace, LocalDateTime.now(), LocalDateTime.now());
-
-
 
     @BeforeEach
     void setup() {
@@ -385,7 +384,6 @@ public class ContractImplTest
         when(bookingDB.getDriver()).thenReturn(driverDB);
         when(bookingDB.getPrice()).thenReturn(550.5);
         when(bookingDB.getId()).thenReturn(1L);
-
         when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(bookingDB));
         when(hotelRepository.findOne(any(Example.class))).thenReturn(Optional.of(hotelDB));
 
@@ -412,7 +410,6 @@ public class ContractImplTest
         when(bookingDB.getPrice()).thenReturn(550.5);
         when(bookingDB.getExtraFee()).thenReturn(7.5);
         when(bookingDB.getId()).thenReturn(1L);
-
         when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(bookingDB));
         when(hotelRepository.findOne(any(Example.class))).thenReturn(Optional.of(hotelDB));
 

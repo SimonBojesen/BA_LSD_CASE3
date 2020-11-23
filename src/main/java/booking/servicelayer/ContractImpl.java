@@ -138,9 +138,9 @@ public class ContractImpl implements booking.Contract {
         return null;
     }
 
-    //Claus vil kigge på denne :)
+
     public BookingDetails findBooking(BookingIdentifier bookingIdentifier) throws NotFoundException, InvalidInputException {
-        BookingDB bookingDB = bookingRepository.findById((long) bookingIdentifier.getId()).get(); // vi skal have ryddet casten væk.
+        BookingDB bookingDB = bookingRepository.findById(bookingIdentifier.getId()).get();
 
         Place pickupPlace = CreatePlaceFrom(bookingDB.getPickUpPlace(), bookingDB.getCar().getPlace());
         Place deliveryPlace = CreatePlaceFrom(bookingDB.getDeliveryPlace(), bookingDB.getCar().getPlace());
