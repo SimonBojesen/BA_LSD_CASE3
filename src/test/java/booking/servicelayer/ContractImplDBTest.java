@@ -53,8 +53,8 @@ public class ContractImplDBTest {
     EmployeeDB persistedEmployeeDB;
     DriverDB persistedDriverDB;
     CarDB persistedCarDBAirport;
-    CarDB persistedCarHotel;
-    CarDB persistedCarNone;
+    CarDB persistedCarDBHotel;
+    CarDB persistedCarDBNone;
 
 
     @BeforeEach
@@ -72,11 +72,11 @@ public class ContractImplDBTest {
         em.persist(persistedDriverDB);
         em.persist(persistedEmployeeDB);
         persistedCarDBAirport = new CarDB(car1, booking.datalayer.constants.Place.AIRPORT, persistedAddressDBAirport);
-        persistedCarHotel = new CarDB(car3, Place.HOTEL, persistedAddressDBHotel);
-        persistedCarNone = new CarDB(car2, booking.datalayer.constants.Place.NONE, null);
+        persistedCarDBHotel = new CarDB(car3, Place.HOTEL, persistedAddressDBHotel);
+        persistedCarDBNone = new CarDB(car2, booking.datalayer.constants.Place.NONE, null);
         em.persist(persistedCarDBAirport);
-        em.persist(persistedCarHotel);
-        em.persist(persistedCarNone);
+        em.persist(persistedCarDBHotel);
+        em.persist(persistedCarDBNone);
         em.flush();
     }
 
@@ -113,7 +113,7 @@ public class ContractImplDBTest {
 
     @Test
     void findBooking_UsingHotelAddress() throws NotFoundException,InvalidInputException {
-        BookingDB persistedBooking = new BookingDB(persistedCarHotel, persistedDriverDB, persistedEmployeeDB, persistedAddressDBHotel,LocalDateTime.now(), LocalDateTime.now().minusDays(2), 20d, 30d);
+        BookingDB persistedBooking = new BookingDB(persistedCarDBHotel, persistedDriverDB, persistedEmployeeDB, persistedAddressDBHotel,LocalDateTime.now(), LocalDateTime.now().minusDays(2), 20d, 30d);
         em.persist(persistedBooking);
         em.flush();
 

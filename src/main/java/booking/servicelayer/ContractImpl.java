@@ -157,26 +157,32 @@ public class ContractImpl implements booking.Contract {
         return bookingDetails;
     }
 
-    private Place CreatePlaceFrom(AddressDB addressDB, booking.datalayer.constants.Place placeType)
-    {
+    private Place CreatePlaceFrom(AddressDB addressDB, booking.datalayer.constants.Place placeType) throws NotFoundException {
         String name = "";
         boolean active = false;
 
-        switch(placeType)
-        {
+        switch (placeType) {
             case AIRPORT:
-                AirportDB airportDB = airportRepository.findAirportDBByAddressDB(addressDB).get();
-                name = airportDB.getName();
-                active = airportDB.isActive();
+                Optional<AirportDB> airportDBOptional = airportRepository.findAirportDBByAddressDB(addressDB);
+                if (airportDBOptional.isPresent()) {
+                    AirportDB airportDB = airportDBOptional.get();
+                    name = airportDB.getName();
+                    active = airportDB.isActive();
+                } else throw new NotFoundException("No Airport with address was found");
                 break;
             case HOTEL:
-                HotelDB hotelDB = hotelRepository.findHotelDBByAddressDB(addressDB).get();
-                name = hotelDB.getName();
-                active = hotelDB.isActive();
+                Optional<HotelDB> hotelDBOptional = hotelRepository.findHotelDBByAddressDB(addressDB);
+                if (hotelDBOptional.isPresent()) {
+                    HotelDB hotelDB = hotelDBOptional.get();
+                    name = hotelDB.getName();
+                    active = hotelDB.isActive();
+                } else throw new NotFoundException("No Hotel with address was found");
                 break;
             default:
                 break;
         }
+        AirportDB airportDB = airportRepository.findAirportDBByAddressDB(addressDB).get();
+
 
         return new Place(name, addressDB.toAddress(), active);
     }
