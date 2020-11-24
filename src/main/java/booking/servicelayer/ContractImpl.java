@@ -11,7 +11,6 @@ import booking.eto.NotFoundException;
 import booking.eto.PersistanceFailedException;
 import booking.eto.UnavailableException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
@@ -29,7 +28,7 @@ public class ContractImpl implements booking.Contract {
     private HotelRepository hotelRepository;
 
     @Autowired
-    public ContractImpl(AddressRepository addressRepository, EmployeeRepository employeeRepository, DriverRepository driverRepository, CarRepository carRepository, BookingRepository bookingRepository, AirportRepository airportRepository, HotelRepository hotelRepository) {
+    public ContractImpl(AddressRepository addressRepository, EmployeeRepository employeeRepository, DriverRepository driverRepository, CarRepository carRepository, BookingRepository bookingRepository) {
         this.addressRepository = addressRepository;
         this.employeeRepository = employeeRepository;
         this.driverRepository = driverRepository;
@@ -159,6 +158,7 @@ public class ContractImpl implements booking.Contract {
         }
     }
 
+    //Claus vil kigge på denne :)
     public BookingDetails findBooking(BookingIdentifier bookingIdentifier) throws NotFoundException, InvalidInputException {
         BookingDB bookingDB = bookingRepository.findById(bookingIdentifier.getId()).get();
 
@@ -177,51 +177,32 @@ public class ContractImpl implements booking.Contract {
         return bookingDetails;
     }
 
-    //not needed now
-    private LocalDateTime localDateTimeFrom(Date date)
-    {
-        return new java.sql.Timestamp(
-                date.getTime()).toLocalDateTime();
-    }
-
-    private Place CreatePlaceFrom(AddressDB addressDB, booking.datalayer.constants.Place placeType)
-    {
+    private Place CreatePlaceFrom(AddressDB addressDB, booking.datalayer.constants.Place placeType) throws NotFoundException {
         String name = "";
         boolean active = false;
 
-        switch(placeType)
-        {
+        switch (placeType) {
             case AIRPORT:
-                AirportDB airportDB = findAirportByAddress(addressDB);
-                name = airportDB.getName();
-                active = airportDB.isActive();
+                Optional<AirportDB> airportDBOptional = airportRepository.findAirportDBByAddressDB(addressDB);
+                if (airportDBOptional.isPresent()) {
+                    AirportDB airportDB = airportDBOptional.get();
+                    name = airportDB.getName();
+                    active = airportDB.isActive();
+                } else throw new NotFoundException("No Airport with address was found");
                 break;
             case HOTEL:
-                HotelDB hotelDB = findHotelByAddress(addressDB);
-                name = hotelDB.getName();
-                active = hotelDB.isActive();
+                Optional<HotelDB> hotelDBOptional = hotelRepository.findHotelDBByAddressDB(addressDB);
+                if (hotelDBOptional.isPresent()) {
+                    HotelDB hotelDB = hotelDBOptional.get();
+                    name = hotelDB.getName();
+                    active = hotelDB.isActive();
+                } else throw new NotFoundException("No Hotel with address was found");
                 break;
             default:
                 break;
         }
 
         return new Place(name, addressDB.toAddress(), active);
-    }
-
-    private AirportDB findAirportByAddress(AddressDB addressDB)
-    {
-        AirportDB airportDB = new AirportDB();
-        airportDB.setAddress(addressDB);
-        Example<AirportDB> example = Example.of(airportDB);
-        return airportRepository.findOne(example).get();
-    }
-
-    private HotelDB findHotelByAddress(AddressDB addressDB)
-    {
-        HotelDB hotelDB = new HotelDB();
-        hotelDB.setAddress(addressDB);
-        Example<HotelDB> example = Example.of(hotelDB);
-        return hotelRepository.findOne(example).get();
     }
 
     private BookingDB checkBookingExistAndInputNotNull(BookingIdentifier bookingIdentifier) throws NotFoundException, InvalidInputException {
@@ -237,5 +218,4 @@ public class ContractImpl implements booking.Contract {
             throw new InvalidInputException("Given id is either null or 0");
         }
     }
-
 }

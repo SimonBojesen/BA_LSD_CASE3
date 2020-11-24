@@ -2,6 +2,8 @@ package booking.datalayer.entity;
 
 import booking.entity.Driver;
 
+import booking.entity.Driver;
+
 import javax.persistence.*;
 import java.util.Date;
 
