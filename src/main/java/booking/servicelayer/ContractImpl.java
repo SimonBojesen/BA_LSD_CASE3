@@ -2,6 +2,7 @@ package booking.servicelayer;
 
 import booking.datalayer.dao.*;
 import booking.datalayer.entity.*;
+import booking.entity.Hotel;
 import booking.entity.Place;
 import booking.servicelayer.util.HelperFunctions;
 import booking.dto.*;
@@ -11,9 +12,9 @@ import booking.eto.NotFoundException;
 import booking.eto.PersistanceFailedException;
 import booking.eto.UnavailableException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
+import java.sql.Array;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -41,8 +42,18 @@ public class ContractImpl implements booking.Contract {
 
 
     public Collection<CarSummary> listAvailableCars(BookingCriteria bookingCriteria) throws NotFoundException, InvalidInputException {
-        //carRepository.findAvailableCars(bookingCriteria);
+        HelperFunctions.nullCheck(bookingCriteria);
+        HelperFunctions.nullCheck(bookingCriteria.getPickUpPlace());
+        HelperFunctions.nullCheck(bookingCriteria.getPickUpTime());
+        HelperFunctions.nullCheck(bookingCriteria.getDeliveryTime());
         List<CarSummary> cars = new ArrayList();
+        List<CarDB> resultCarDB = carRepository.findAvailableCars(bookingCriteria);
+        if (resultCarDB.isEmpty())
+            throw new NotFoundException("No cars with the given bookingCriteria was found");
+        for (CarDB car : carRepository.findAvailableCars(bookingCriteria)) {
+            CarSummary carSummary = new CarSummary(car.toCar(), bookingCriteria.getPickUpPlace());
+            cars.add(carSummary);
+        }
         return cars;
     }
 
@@ -123,6 +134,7 @@ public class ContractImpl implements booking.Contract {
             bookingToSave = bookingRepository.save(bookingToSave);
             booking = new BookingDetails(bookingToSave.getId(), bookingDetails.getCar(), bookingDetails.getDriverDetails(), bookingDetails.getEmployeeDetails(), bookingDetails.getBookingCriteria(), bookingDetails.getFee(), bookingDetails.getPrice());
         } catch (Exception ex) {
+            //should be logged
             ex.printStackTrace();
             throw new PersistanceFailedException("An error happened while saving to DB");
         }
@@ -131,14 +143,35 @@ public class ContractImpl implements booking.Contract {
     }
 
     public boolean cancelBooking(BookingIdentifier bookingIdentifier) throws PersistanceFailedException, NotFoundException, UnavailableException, InvalidInputException {
-        return false;
+        BookingDB bookingToCancel = checkBookingExistAndInputNotNull(bookingIdentifier);
+        //should be logged
+        if (bookingToCancel.getPickUpDate().isBefore(LocalDateTime.now()))
+            throw new UnavailableException("The booking can't be cancelled as it already started");
+        try {
+            bookingRepository.delete(bookingToCancel);
+            return true;
+        } catch (Exception ex) {
+            //should be logged
+            throw new PersistanceFailedException("Failed to delete booking");
+        }
     }
 
     public BookingDetails endBooking(BookingIdentifier bookingIdentifier) throws PersistanceFailedException, NotFoundException, UnavailableException, InvalidInputException {
-        return null;
+        BookingDB bookingToEnd = checkBookingExistAndInputNotNull(bookingIdentifier);
+        if (bookingToEnd.getDeliveryDate().isBefore(LocalDateTime.now()))
+            throw new UnavailableException("Booking is still in progress");
+        try {
+            bookingToEnd.setEnded(true);
+            bookingRepository.save(bookingToEnd);
+
+            return null;
+        } catch (Exception ex) {
+            //should be logged
+            throw new PersistanceFailedException("Failed to update booking");
+        }
     }
 
-
+    //Claus vil kigge på denne :)
     public BookingDetails findBooking(BookingIdentifier bookingIdentifier) throws NotFoundException, InvalidInputException {
         BookingDB bookingDB = bookingRepository.findById(bookingIdentifier.getId()).get();
 
@@ -160,7 +193,7 @@ public class ContractImpl implements booking.Contract {
     private Place CreatePlaceFrom(AddressDB addressDB, booking.datalayer.constants.Place placeType) throws NotFoundException {
         String name = "";
         boolean active = false;
-
+        //TODO Clean up this switch. Booking pickUpPlace and car place must be of the same type or the address will not be found
         switch (placeType) {
             case AIRPORT:
                 Optional<AirportDB> airportDBOptional = airportRepository.findAirportDBByAddressDB(addressDB);
@@ -181,9 +214,21 @@ public class ContractImpl implements booking.Contract {
             default:
                 break;
         }
-
         return new Place(name, addressDB.toAddress(), active);
     }
 
+    private BookingDB checkBookingExistAndInputNotNull(BookingIdentifier bookingIdentifier) throws NotFoundException, InvalidInputException {
+        if (bookingIdentifier != null && bookingIdentifier.getId() > 0) {
+            try {
+                return bookingRepository.findById(bookingIdentifier.getId()).get();
+            } catch (Exception ex) {
+                //should be logged
+                throw new NotFoundException("Failed to find booking");
+            }
+        } else {
+            //should be logged
+            throw new InvalidInputException("Given id is either null or 0");
+        }
+    }
 
 }
