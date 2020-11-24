@@ -1,5 +1,8 @@
 package booking.datalayer.entity;
 
+import booking.entity.Address;
+import booking.entity.Place;
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -18,11 +21,11 @@ public class AddressDB {
     }
 
     //Wrong one
-    public AddressDB(String streetAddress, int postalCode, String city) {
+    /*public AddressDB(String streetAddress, int postalCode, String city) {
         this.streetAddress = streetAddress;
         this.postalCode = postalCode;
         this.city = city;
-    }
+    }*/
 
     public AddressDB(booking.entity.Address address) {
         this.streetAddress = address.getStreetAddress();
@@ -44,6 +47,12 @@ public class AddressDB {
 
     public String getCity() {
         return city;
+    }
+
+
+    public Address toAddress()
+    {
+        return new Address(streetAddress, postalCode, city);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package booking.datalayer.entity;
 
+import booking.entity.Employee;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -67,5 +69,17 @@ public class EmployeeDB {
 
     public String getPassword() {
         return password;
+    }
+
+    public Employee toEmployee()
+    {
+        return new Employee(this.name,
+                this.addressDB.toAddress(),
+                this.email,
+                this.dateOfBirth,
+                this.socialSecurityNumber,
+                this.active,
+                this.username,
+                this.password);
     }
 }

@@ -2,6 +2,7 @@ package booking.servicelayer;
 
 import booking.datalayer.dao.*;
 import booking.datalayer.entity.*;
+import booking.entity.Place;
 import booking.servicelayer.util.HelperFunctions;
 import booking.dto.*;
 import booking.entity.Address;
@@ -10,13 +11,12 @@ import booking.eto.NotFoundException;
 import booking.eto.PersistanceFailedException;
 import booking.eto.UnavailableException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service("ContractImpl")
 public class ContractImpl implements booking.Contract {
@@ -25,14 +25,18 @@ public class ContractImpl implements booking.Contract {
     private DriverRepository driverRepository;
     private CarRepository carRepository;
     private BookingRepository bookingRepository;
+    private AirportRepository airportRepository;
+    private HotelRepository hotelRepository;
 
     @Autowired
-    public ContractImpl(AddressRepository addressRepository, EmployeeRepository employeeRepository, DriverRepository driverRepository, CarRepository carRepository, BookingRepository bookingRepository) {
+    public ContractImpl(AddressRepository addressRepository, EmployeeRepository employeeRepository, DriverRepository driverRepository, CarRepository carRepository, BookingRepository bookingRepository, AirportRepository airportRepository, HotelRepository hotelRepository) {
         this.addressRepository = addressRepository;
         this.employeeRepository = employeeRepository;
         this.driverRepository = driverRepository;
         this.carRepository = carRepository;
         this.bookingRepository = bookingRepository;
+        this.airportRepository = airportRepository;
+        this.hotelRepository = hotelRepository;
     }
 
 
@@ -134,8 +138,52 @@ public class ContractImpl implements booking.Contract {
         return null;
     }
 
-    //Claus vil kigge på denne :)
+
     public BookingDetails findBooking(BookingIdentifier bookingIdentifier) throws NotFoundException, InvalidInputException {
-        return null;
+        BookingDB bookingDB = bookingRepository.findById(bookingIdentifier.getId()).get();
+
+        Place pickupPlace = CreatePlaceFrom(bookingDB.getPickUpPlace(), bookingDB.getCar().getPlace());
+        Place deliveryPlace = CreatePlaceFrom(bookingDB.getDeliveryPlace(), bookingDB.getCar().getPlace());
+
+        CarSummary carSummary = new CarSummary(bookingDB.getCar().toCar(), pickupPlace);
+        DriverDetails driverDetails = new DriverDetails(bookingDB.getDriver().toDriver(), bookingDB.getDriver().getLicenseNo());
+        EmployeeDetails employeeDetails = new EmployeeDetails(bookingDB.getEmployee().toEmployee());
+        LocalDateTime pickupDate = bookingDB.getPickUpDate();
+        LocalDateTime deliveryDate = bookingDB.getDeliveryDate();
+
+        BookingCriteria bookingCriteria = new BookingCriteria(pickupPlace, deliveryPlace, pickupDate, deliveryDate);
+        BookingDetails bookingDetails = new BookingDetails(bookingDB.getId(), carSummary, driverDetails, employeeDetails, bookingCriteria, bookingDB.getExtraFee(), bookingDB.getPrice());
+
+        return bookingDetails;
     }
+
+    private Place CreatePlaceFrom(AddressDB addressDB, booking.datalayer.constants.Place placeType) throws NotFoundException {
+        String name = "";
+        boolean active = false;
+
+        switch (placeType) {
+            case AIRPORT:
+                Optional<AirportDB> airportDBOptional = airportRepository.findAirportDBByAddressDB(addressDB);
+                if (airportDBOptional.isPresent()) {
+                    AirportDB airportDB = airportDBOptional.get();
+                    name = airportDB.getName();
+                    active = airportDB.isActive();
+                } else throw new NotFoundException("No Airport with address was found");
+                break;
+            case HOTEL:
+                Optional<HotelDB> hotelDBOptional = hotelRepository.findHotelDBByAddressDB(addressDB);
+                if (hotelDBOptional.isPresent()) {
+                    HotelDB hotelDB = hotelDBOptional.get();
+                    name = hotelDB.getName();
+                    active = hotelDB.isActive();
+                } else throw new NotFoundException("No Hotel with address was found");
+                break;
+            default:
+                break;
+        }
+
+        return new Place(name, addressDB.toAddress(), active);
+    }
+
+
 }
