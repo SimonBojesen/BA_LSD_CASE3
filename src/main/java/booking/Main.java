@@ -7,11 +7,11 @@ import org.springframework.context.ConfigurableApplicationContext;
 @SpringBootApplication
 public class Main {
     public static void main(String[] args) {
-        ConfigurableApplicationContext context = SpringApplication.run(Main.class, args);
+        SpringApplication.run(Main.class, args);
 
 
-        Test test = context.getBean(Test.class);
-        test.insertIntoDB();
+        /*Test test = context.getBean(Test.class);
+        test.insertIntoDB();*/
 
     }
 }
