@@ -17,7 +17,7 @@ public class CarDB {
     private Type type;
     private double price;
     private int noOfSeats;
-    private transient boolean active;
+    private boolean active;
     private Place place;
     @OneToOne
     private AddressDB station;
@@ -33,6 +33,7 @@ public class CarDB {
         this.station = station;
     }
 
+
     public CarDB() {
 
     }
@@ -41,36 +42,72 @@ public class CarDB {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getVin() {
         return vin;
+    }
+
+    public void setVin(String vin) {
+        this.vin = vin;
     }
 
     public String getLicensePlate() {
         return licensePlate;
     }
 
+    public void setLicensePlate(String licensePlate) {
+        this.licensePlate = licensePlate;
+    }
+
     public Type getType() {
         return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
     }
 
     public double getPrice() {
         return price;
     }
 
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
     public int getNoOfSeats() {
         return noOfSeats;
+    }
+
+    public void setNoOfSeats(int noOfSeats) {
+        this.noOfSeats = noOfSeats;
     }
 
     public boolean isActive() {
         return active;
     }
 
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     public Place getPlace() {
         return place;
     }
 
+    public void setPlace(Place place) {
+        this.place = place;
+    }
+
     public AddressDB getStation() {
         return station;
+    }
+
+    public void setStation(AddressDB station) {
+        this.station = station;
     }
 
     public Car toCar()

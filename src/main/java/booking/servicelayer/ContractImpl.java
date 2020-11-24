@@ -2,6 +2,7 @@ package booking.servicelayer;
 
 import booking.datalayer.dao.*;
 import booking.datalayer.entity.*;
+import booking.entity.Hotel;
 import booking.entity.Place;
 import booking.servicelayer.util.HelperFunctions;
 import booking.dto.*;
@@ -13,6 +14,7 @@ import booking.eto.UnavailableException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Array;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -28,7 +30,7 @@ public class ContractImpl implements booking.Contract {
     private HotelRepository hotelRepository;
 
     @Autowired
-    public ContractImpl(AddressRepository addressRepository, EmployeeRepository employeeRepository, DriverRepository driverRepository, CarRepository carRepository, BookingRepository bookingRepository) {
+    public ContractImpl(AddressRepository addressRepository, EmployeeRepository employeeRepository, DriverRepository driverRepository, CarRepository carRepository, BookingRepository bookingRepository, AirportRepository airportRepository, HotelRepository hotelRepository) {
         this.addressRepository = addressRepository;
         this.employeeRepository = employeeRepository;
         this.driverRepository = driverRepository;
@@ -40,8 +42,18 @@ public class ContractImpl implements booking.Contract {
 
 
     public Collection<CarSummary> listAvailableCars(BookingCriteria bookingCriteria) throws NotFoundException, InvalidInputException {
-        //carRepository.findAvailableCars(bookingCriteria);
+        HelperFunctions.nullCheck(bookingCriteria);
+        HelperFunctions.nullCheck(bookingCriteria.getPickUpPlace());
+        HelperFunctions.nullCheck(bookingCriteria.getPickUpTime());
+        HelperFunctions.nullCheck(bookingCriteria.getDeliveryTime());
         List<CarSummary> cars = new ArrayList();
+        List<CarDB> resultCarDB = carRepository.findAvailableCars(bookingCriteria);
+        if (resultCarDB.isEmpty())
+            throw new NotFoundException("No cars with the given bookingCriteria was found");
+        for (CarDB car : carRepository.findAvailableCars(bookingCriteria)) {
+            CarSummary carSummary = new CarSummary(car.toCar(), bookingCriteria.getPickUpPlace());
+            cars.add(carSummary);
+        }
         return cars;
     }
 
@@ -146,13 +158,14 @@ public class ContractImpl implements booking.Contract {
 
     public BookingDetails endBooking(BookingIdentifier bookingIdentifier) throws PersistanceFailedException, NotFoundException, UnavailableException, InvalidInputException {
         BookingDB bookingToEnd = checkBookingExistAndInputNotNull(bookingIdentifier);
-        if (bookingToEnd.getDeliveryDate().isBefore(LocalDateTime.now())) throw new UnavailableException("Booking is still in progress");
+        if (bookingToEnd.getDeliveryDate().isBefore(LocalDateTime.now()))
+            throw new UnavailableException("Booking is still in progress");
         try {
             bookingToEnd.setEnded(true);
             bookingRepository.save(bookingToEnd);
 
             return null;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             //should be logged
             throw new PersistanceFailedException("Failed to update booking");
         }
@@ -180,7 +193,7 @@ public class ContractImpl implements booking.Contract {
     private Place CreatePlaceFrom(AddressDB addressDB, booking.datalayer.constants.Place placeType) throws NotFoundException {
         String name = "";
         boolean active = false;
-
+        //TODO Clean up this switch. Booking pickUpPlace and car place must be of the same type or the address will not be found
         switch (placeType) {
             case AIRPORT:
                 Optional<AirportDB> airportDBOptional = airportRepository.findAirportDBByAddressDB(addressDB);
@@ -201,7 +214,6 @@ public class ContractImpl implements booking.Contract {
             default:
                 break;
         }
-
         return new Place(name, addressDB.toAddress(), active);
     }
 
@@ -218,4 +230,5 @@ public class ContractImpl implements booking.Contract {
             throw new InvalidInputException("Given id is either null or 0");
         }
     }
+
 }

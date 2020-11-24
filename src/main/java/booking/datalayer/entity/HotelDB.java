@@ -36,7 +36,6 @@ public class HotelDB {
     public AddressDB getAddress() {
         return addressDB;
     }
-    public void setAddress(AddressDB value){this.addressDB = value;}
 
     public boolean isActive() {
         return active;

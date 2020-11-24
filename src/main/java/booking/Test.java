@@ -3,10 +3,12 @@ package booking;
 import booking.datalayer.constants.Place;
 import booking.datalayer.dao.*;
 import booking.datalayer.entity.*;
+import booking.dto.BookingDetails;
 import booking.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Component
@@ -55,5 +57,9 @@ public class Test {
         carRepository.save(sampleCar);
         carRepository.save(sampleCar3);
         carRepository.save(sampleCar2);
+        BookingDB sampleBooking = new BookingDB(sampleCar2, sampleDriver,sampleEmployee, sampleAddress,LocalDateTime.now(), LocalDateTime.now().plusDays(2), 50d,20d);
+        BookingDB sampleBooking2 = new BookingDB(sampleCar2, sampleDriver,sampleEmployee, sampleAddress,LocalDateTime.now().minusDays(4), LocalDateTime.now().minusDays(2), 80d,30d);
+        bookingRepository.save(sampleBooking);
+        bookingRepository.save(sampleBooking2);
     }
 }

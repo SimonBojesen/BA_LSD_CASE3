@@ -1,9 +1,11 @@
 package booking.datalayer.dao;
 
+import booking.datalayer.entity.CarDB;
 import booking.dto.BookingCriteria;
 import booking.dto.CarSummary;
 import java.util.Collection;
+import java.util.List;
 
 public interface CustomCarRepository {
-    Collection<CarSummary> findAvailableCars(BookingCriteria bookingCriteria);
+    List<CarDB> findAvailableCars(BookingCriteria bookingCriteria);
 }
