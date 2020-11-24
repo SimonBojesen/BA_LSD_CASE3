@@ -157,22 +157,26 @@ public class ContractImpl implements booking.Contract {
         return bookingDetails;
     }
 
-    private Place CreatePlaceFrom(AddressDB addressDB, booking.datalayer.constants.Place placeType)
-    {
+    private Place CreatePlaceFrom(AddressDB addressDB, booking.datalayer.constants.Place placeType) throws NotFoundException {
         String name = "";
         boolean active = false;
 
-        switch(placeType)
-        {
+        switch (placeType) {
             case AIRPORT:
-                AirportDB airportDB = findAirportByAddress(addressDB);
-                name = airportDB.getName();
-                active = airportDB.isActive();
+                Optional<AirportDB> airportDBOptional = airportRepository.findAirportDBByAddressDB(addressDB);
+                if (airportDBOptional.isPresent()) {
+                    AirportDB airportDB = airportDBOptional.get();
+                    name = airportDB.getName();
+                    active = airportDB.isActive();
+                } else throw new NotFoundException("No Airport with address was found");
                 break;
             case HOTEL:
-                HotelDB hotelDB = findHotelByAddress(addressDB);
-                name = hotelDB.getName();
-                active = hotelDB.isActive();
+                Optional<HotelDB> hotelDBOptional = hotelRepository.findHotelDBByAddressDB(addressDB);
+                if (hotelDBOptional.isPresent()) {
+                    HotelDB hotelDB = hotelDBOptional.get();
+                    name = hotelDB.getName();
+                    active = hotelDB.isActive();
+                } else throw new NotFoundException("No Hotel with address was found");
                 break;
             default:
                 break;
@@ -181,19 +185,5 @@ public class ContractImpl implements booking.Contract {
         return new Place(name, addressDB.toAddress(), active);
     }
 
-    private AirportDB findAirportByAddress(AddressDB addressDB)
-    {
-        AirportDB airportDB = new AirportDB();
-        airportDB.setAddress(addressDB);
-        Example<AirportDB> example = Example.of(airportDB);
-        return airportRepository.findOne(example).get();
-    }
 
-    private HotelDB findHotelByAddress(AddressDB addressDB)
-    {
-        HotelDB hotelDB = new HotelDB();
-        hotelDB.setAddress(addressDB);
-        Example<HotelDB> example = Example.of(hotelDB);
-        return hotelRepository.findOne(example).get();
-    }
 }

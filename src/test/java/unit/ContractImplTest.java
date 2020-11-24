@@ -383,7 +383,8 @@ public class ContractImplTest
         when(bookingDB.getPrice()).thenReturn(550.5);
         when(bookingDB.getId()).thenReturn(1L);
         when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(bookingDB));
-        when(hotelRepository.findOne(any(Example.class))).thenReturn(Optional.of(pickUpHotelDB));
+        when(hotelRepository.findHotelDBByAddressDB(any(AddressDB.class))).thenReturn(Optional.of(pickUpHotelDB));
+
 
         // Act
         contractImpl.findBooking(new BookingIdentifier(1L));
@@ -411,7 +412,7 @@ public class ContractImplTest
         when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(bookingDB));
 
         // first call yields Optional of pick up hotel, second call yields Optional of delivery hotel.
-        when(hotelRepository.findOne(any(Example.class))).thenReturn(Optional.of(pickUpHotelDB), Optional.of(deliveryHotelDB));
+        when(hotelRepository.findHotelDBByAddressDB(any(AddressDB.class))).thenReturn(Optional.of(pickUpHotelDB), Optional.of(deliveryHotelDB));
 
         // Act
         BookingDetails result = contractImpl.findBooking(new BookingIdentifier(4L));
