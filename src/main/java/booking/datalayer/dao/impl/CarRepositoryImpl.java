@@ -38,12 +38,20 @@ public class CarRepositoryImpl implements CustomCarRepository
         try {
             Address stationAddress = bookingCriteria.getPickUpPlace().getAddress();
             AddressDB station = addressRepository.findByStreetAddressAndCityAndPostalCode(stationAddress.getStreetAddress(), stationAddress.getCity(), stationAddress.getPostalCode()).get();
-            String query = "select c from CarDB c left join BookingDB b on c = b.car" +
-                    " where c.active = true and c.station = :station" +
-            " and :deliveryDate < b.pickUpDate and b.deliveryDate < :pickUpDate";
+            /*String query = "SELECT DISTINCT c " +
+                           "FROM CarDB c LEFT JOIN BookingDB b ON c = b.car " +
+                           "WHERE c.active = TRUE AND c.station = :station " +
+                           "AND ((:pickUpDate > b.deliveryDate AND :pickUpDate > b.pickUpDate) "+
+                           "OR (:pickUpDate < b.deliveryDate AND :pickUpDate < b.pickUpDate))";*/
+
+            String query = "SELECT DISTINCT c " +
+                            "FROM CarDB c LEFT JOIN BookingDB b ON c = b.car " +
+                            "WHERE c.active = TRUE AND c.station = :station AND (b.id IS NULL OR " +
+                            "((:pickUpDate > b.deliveryDate AND :pickUpDate > b.pickUpDate) " +
+                            "OR (:pickUpDate < b.deliveryDate AND :pickUpDate < b.pickUpDate)))";
+
             Query q = em.createQuery(query);
             q.setParameter("station", station);
-            q.setParameter("deliveryDate", bookingCriteria.getDeliveryTime());
             q.setParameter("pickUpDate", bookingCriteria.getPickUpTime());
             result = q.getResultList();
         }catch (Exception e){

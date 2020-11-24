@@ -135,7 +135,7 @@ public class ContractImplDBTest {
     }
 
     @Test
-    void listAvailableCars_WithSameCar() throws NotFoundException, InvalidInputException {
+    void listAvailableCars_WhenCreatingBookingBetweenOtherBookingsWithSameCarTest() throws NotFoundException, InvalidInputException {
         Address testAddress = new Address("street", 2300, "testBy");
         AddressDB addressDB = new AddressDB(testAddress);
         em.persist(addressDB);
@@ -143,7 +143,7 @@ public class ContractImplDBTest {
         booking.entity.Place deliveryPlace = new booking.entity.Place("hotel", address2, true);
         CarDB carDB = new CarDB(new Car("123", "testPlate", Type.B, 20d, 2, true), Place.AIRPORT, addressDB);
         em.persist(carDB);
-        BookingDB booking =   new BookingDB(carDB, persistedDriverDB, persistedEmployeeDB, addressDB,LocalDateTime.now(), LocalDateTime.now().plusDays(2), 20d, 30d);
+        BookingDB booking = new BookingDB(carDB, persistedDriverDB, persistedEmployeeDB, addressDB,LocalDateTime.now(), LocalDateTime.now().plusDays(2), 20d, 30d);
         BookingDB booking2 = new BookingDB(carDB, persistedDriverDB, persistedEmployeeDB, addressDB,LocalDateTime.now().plusDays(4), LocalDateTime.now().plusDays(6), 20d, 30d);
         em.persist(booking);
         em.persist(booking2);
@@ -153,6 +153,22 @@ public class ContractImplDBTest {
         assertEquals(1, cars.size());
     }
 
-
-
+    @Test
+    void listAvailableCars_WhenCreatingBookingBetweenOtherBookingsWithSameCar2Test() throws NotFoundException, InvalidInputException {
+        Address testAddress = new Address("street", 2300, "testBy");
+        AddressDB addressDB = new AddressDB(testAddress);
+        em.persist(addressDB);
+        booking.entity.Place pickUpPlace = new booking.entity.Place("airport", testAddress, true);
+        booking.entity.Place deliveryPlace = new booking.entity.Place("hotel", address2, true);
+        CarDB carDB1 = new CarDB(new Car("123", "testPlate", Type.A, 20d, 2, true), Place.AIRPORT, addressDB);
+        CarDB carDB2 = new CarDB(new Car("123", "testPlate", Type.B, 30d, 4, true), Place.AIRPORT, addressDB);
+        CarDB carDB3 = new CarDB(new Car("123", "testPlate", Type.C, 40d, 5, true), Place.AIRPORT, addressDB);
+        em.persist(carDB1);
+        em.persist(carDB2);
+        em.persist(carDB3);
+        em.flush();
+        BookingCriteria bookingCriteria = new BookingCriteria(pickUpPlace,deliveryPlace,LocalDateTime.now().plusDays(2).plusHours(3),LocalDateTime.now().plusDays(3));
+        Collection<CarSummary> cars = contractImpl.listAvailableCars(bookingCriteria);
+        assertEquals(3, cars.size());
+    }
 }
