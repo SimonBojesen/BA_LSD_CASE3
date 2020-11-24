@@ -13,15 +13,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import booking.eto.PersistanceFailedException;
 import booking.eto.UnavailableException;
 import booking.servicelayer.ContractImpl;
-import org.hamcrest.core.AnyOf;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Example;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Optional;
 
@@ -62,11 +59,11 @@ public class ContractImplTest
 
     // Simple DTOs from contract.
     Car car = new Car("asdf", "bif1964", Type.E, 200.0, 5, true);
-    Address hotelAddress = new Address("Ellehammervej yy", 2300, "København S");
+    Address pickupHotelAddress = new Address("Ellehammervej 12", 2300, "København S");
     Address driverAddress = new Address("Hovedgaden", 5000, "Odense");
     Address deliveryAddress = new Address("Ellehøjvej", 2800, "Lyngby");
     Address employeeAddress = new Address("Ved vejen 2", 6000, "Kolding");
-    Place pickupPlace = new Place("Hilton CPH airport", hotelAddress, true);
+    Place pickupPlace = new Place("Hilton CPH airport", pickupHotelAddress, true);
     Place deliveryPlace = new Place("Butikken", deliveryAddress, true);
 
     // Composite DTOs from contract.
@@ -74,12 +71,13 @@ public class ContractImplTest
     BookingCriteria bookingCriteria = new BookingCriteria(pickupPlace, deliveryPlace, LocalDateTime.now(), LocalDateTime.now());
 
     // DAOs from backend.
-    AddressDB hotelAddressDB = new AddressDB(hotelAddress);
+    AddressDB pickupAddressDB = new AddressDB(pickupHotelAddress);
     AddressDB driverAddressDB = new AddressDB(driverAddress);
     AddressDB deliveryAddressDB = new AddressDB(deliveryAddress);
     AddressDB employeeAddressDB = new AddressDB(employeeAddress);
-    CarDB carDB = new CarDB(car, booking.datalayer.constants.Place.HOTEL, hotelAddressDB);
-    HotelDB hotelDB = new HotelDB(pickupPlace.getName(), hotelAddressDB, true, Rating.FIVE);
+    CarDB carDB = new CarDB(car, booking.datalayer.constants.Place.HOTEL, pickupAddressDB);
+    HotelDB pickUpHotelDB = new HotelDB(pickupPlace.getName(), pickupAddressDB, true, Rating.FIVE);
+    HotelDB deliveryHotelDB = new HotelDB(deliveryPlace.getName(), deliveryAddressDB, true, Rating.FOUR);
     DriverDB driverDB = new DriverDB("Anders Sand", driverAddressDB, "anders@sand.nu", new Date(), 123, true, 543L);
     EmployeeDB employeeDB = new EmployeeDB("Ansat 1", employeeAddressDB, "vilejer@biler.ud", new Date(), 234234, true, "demo", "demon");
 
@@ -377,7 +375,7 @@ public class ContractImplTest
         BookingDB bookingDB = mock(BookingDB.class);
         when(bookingDB.getCar()).thenReturn(carDB);
         when(bookingDB.getPickUpDate()).thenReturn(LocalDateTime.now());
-        when(bookingDB.getPickUpPlace()).thenReturn(hotelAddressDB);
+        when(bookingDB.getPickUpPlace()).thenReturn(pickupAddressDB);
         when(bookingDB.getDeliveryDate()).thenReturn(LocalDateTime.now());
         when(bookingDB.getDeliveryPlace()).thenReturn(deliveryAddressDB);
         when(bookingDB.getEmployee()).thenReturn(employeeDB);
@@ -385,7 +383,7 @@ public class ContractImplTest
         when(bookingDB.getPrice()).thenReturn(550.5);
         when(bookingDB.getId()).thenReturn(1L);
         when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(bookingDB));
-        when(hotelRepository.findOne(any(Example.class))).thenReturn(Optional.of(hotelDB));
+        when(hotelRepository.findOne(any(Example.class))).thenReturn(Optional.of(pickUpHotelDB));
 
         // Act
         contractImpl.findBooking(new BookingIdentifier(1L));
@@ -402,7 +400,7 @@ public class ContractImplTest
         BookingDB bookingDB = mock(BookingDB.class);
         when(bookingDB.getCar()).thenReturn(carDB);
         when(bookingDB.getPickUpDate()).thenReturn(LocalDateTime.now());
-        when(bookingDB.getPickUpPlace()).thenReturn(hotelAddressDB);
+        when(bookingDB.getPickUpPlace()).thenReturn(pickupAddressDB);
         when(bookingDB.getDeliveryDate()).thenReturn(LocalDateTime.now());
         when(bookingDB.getDeliveryPlace()).thenReturn(deliveryAddressDB);
         when(bookingDB.getEmployee()).thenReturn(employeeDB);
@@ -411,7 +409,9 @@ public class ContractImplTest
         when(bookingDB.getExtraFee()).thenReturn(7.5);
         when(bookingDB.getId()).thenReturn(1L);
         when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(bookingDB));
-        when(hotelRepository.findOne(any(Example.class))).thenReturn(Optional.of(hotelDB));
+
+        // first call yields Optional of pick up hotel, second call yields Optional of delivery hotel.
+        when(hotelRepository.findOne(any(Example.class))).thenReturn(Optional.of(pickUpHotelDB), Optional.of(deliveryHotelDB));
 
         // Act
         BookingDetails result = contractImpl.findBooking(new BookingIdentifier(4L));
