@@ -1,8 +1,15 @@
-language: java
+if: branch = main
 
-jdk: openjdk15
+  language: java
 
-sudo: false # faster builds
+  jdk: openjdk15
 
-script: "mvn test"
+  sudo: false # faster builds
 
+  script: "mvn test"
+
+  deploy:
+    provider: heroku
+    api_key: $HEROKU_API_KEY
+    app:
+      main: car-renting-service
