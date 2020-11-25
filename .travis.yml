@@ -1,4 +1,4 @@
-if: branch = develop
+if: branch = main
 language: java
 jdk: openjdk15
 sudo: false # faster builds
