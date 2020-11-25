@@ -17,13 +17,14 @@ import org.hibernate.annotations.NotFound;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.data.domain.Example;
 
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Optional;
 
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 public class ContractImplTest
@@ -38,13 +39,7 @@ public class ContractImplTest
     private HotelRepository hotelRepository = mock(HotelRepository.class);
 
     // SUT
-    private Contract contractImpl = new ContractImpl(addressRepository,
-            employeeRepository,
-            driverRepository,
-            carRepository,
-            bookingRepository,
-            airportRepository,
-            hotelRepository);
+    private Contract contractImpl = new ContractImpl(addressRepository,employeeRepository,driverRepository,carRepository,bookingRepository, airportRepository, hotelRepository);
 
     //Test data
     private Address address;
@@ -56,6 +51,7 @@ public class ContractImplTest
     private Hotel hotel;
     private Airport airport;
     private Employee employee;
+
 
     // Simple DTOs from contract.
     Car car = new Car("asdf", "bif1964", Type.E, 200.0, 5, true);
@@ -80,6 +76,7 @@ public class ContractImplTest
     HotelDB deliveryHotelDB = new HotelDB(deliveryPlace.getName(), deliveryAddressDB, true, Rating.FOUR);
     DriverDB driverDB = new DriverDB("Anders Sand", driverAddressDB, "anders@sand.nu", new Date(), 123, true, 543L);
     EmployeeDB employeeDB = new EmployeeDB("Ansat 1", employeeAddressDB, "vilejer@biler.ud", new Date(), 234234, true, "demo", "demon");
+
 
     @BeforeEach
     void setup() {
@@ -342,32 +339,6 @@ public class ContractImplTest
         });
     }
 
-    /*@Test
-    public void mustCallCarRepositoryWhenListingAvailableCars() throws NotFoundException, InvalidInputException
-    {
-        // Arrange
-        // Act
-        contractImpl.listAvailableCars(bookingCriteria);
-
-        // Assert
-        verify(carRepository, times(1)).findAvailableCars(any(BookingCriteria.class));
-    }
-
-    @Test
-    public void mustReturnListOfCars() throws NotFoundException, InvalidInputException
-    {
-        // Arrange
-        Collection<CarSummary> carList = new ArrayList<>();
-        carList.add(carSummary);
-        when(carRepository.findAvailableCars(any(BookingCriteria.class))).thenReturn(carList);
-
-        // Act
-        Collection<CarSummary> cars = contractImpl.listAvailableCars(bookingCriteria);
-
-        // Assert
-        assertNotNull(cars);
-    }
-*/
     @Test
     public void mustCallBookingRepositoryWhenFindingBooking() throws NotFoundException, InvalidInputException, NoSuchFieldException, IllegalAccessException
     {
@@ -449,4 +420,5 @@ public class ContractImplTest
         // Assert
         assertThrows(InvalidInputException.class, () -> contractImpl.findBooking(bookingIdentifier));
     }
+
 }

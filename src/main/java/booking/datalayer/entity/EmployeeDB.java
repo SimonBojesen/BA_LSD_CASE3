@@ -71,15 +71,7 @@ public class EmployeeDB {
         return password;
     }
 
-    public Employee toEmployee()
-    {
-        return new Employee(this.name,
-                this.addressDB.toAddress(),
-                this.email,
-                this.dateOfBirth,
-                this.socialSecurityNumber,
-                this.active,
-                this.username,
-                this.password);
+    public Employee toEmployee() {
+        return new Employee(this.name,this.addressDB.toAddress(),this.email,this.dateOfBirth,this.socialSecurityNumber,this.active,this.username,this.password);
     }
 }
