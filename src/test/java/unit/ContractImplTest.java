@@ -13,6 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import booking.eto.PersistanceFailedException;
 import booking.eto.UnavailableException;
 import booking.servicelayer.ContractImpl;
+import org.hibernate.annotations.NotFound;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,8 +23,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class ContractImplTest
@@ -419,5 +419,34 @@ public class ContractImplTest
 
         // Assert
         assertEquals(expected, result.getClass());
+    }
+    
+    @Test
+    public void mustThrowNotFoundExceptionWhenBookingIsNotFound() {
+        // Arrange
+        when(bookingRepository.findById(anyLong())).thenReturn(Optional.empty());
+        
+        // Act
+        // Assert
+        assertThrows(NotFoundException.class, () -> contractImpl.findBooking(new BookingIdentifier(4L)));
+    }
+
+    @Test
+    public void mustThrowInvalidInputExceptionWhenBookingIdentifierIsNull() {
+        // Arrange
+        // Act
+        // Assert
+        assertThrows(InvalidInputException.class, () -> contractImpl.findBooking(null));
+    }
+
+    @Test
+    public void mustThrowInvalidInputExceptionWhenBookingIdentifierIdIsNull() {
+        // Arrange
+        BookingIdentifier bookingIdentifier = mock(BookingIdentifier.class);
+        when(bookingIdentifier.getId()).thenReturn(null);
+
+        // Act
+        // Assert
+        assertThrows(InvalidInputException.class, () -> contractImpl.findBooking(bookingIdentifier));
     }
 }
