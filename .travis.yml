@@ -1,12 +1,8 @@
 if: branch = main
 language: java
-
 jdk: openjdk15
-
 sudo: false # faster builds
-
 script: "mvn test"
-
 deploy:
   provider: heroku
   api_key: $HEROKU_API_KEY
