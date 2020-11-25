@@ -173,19 +173,34 @@ public class ContractImpl implements booking.Contract {
 
     //Claus vil kigge på denne :)
     public BookingDetails findBooking(BookingIdentifier bookingIdentifier) throws NotFoundException, InvalidInputException {
-        BookingDB bookingDB = bookingRepository.findById(bookingIdentifier.getId()).get();
+        // is bookingIdentifier valid?
+        if (bookingIdentifier == null || bookingIdentifier.getId() == null)
+            throw new InvalidInputException("The provided identifier for this booking is invalid.");
 
-        Place pickupPlace = CreatePlaceFrom(bookingDB.getPickUpPlace(), bookingDB.getCar().getPlace());
-        Place deliveryPlace = CreatePlaceFrom(bookingDB.getDeliveryPlace(), bookingDB.getCar().getPlace());
+        // Does BookingDB exist?
+        Optional<BookingDB> bookingDBOptional = bookingRepository.findById(bookingIdentifier.getId());
+        BookingDB bookingDB;
+        BookingDetails bookingDetails;
+        try
+        {
+            bookingDB = bookingDBOptional.get();
 
-        CarSummary carSummary = new CarSummary(bookingDB.getCar().toCar(), pickupPlace);
-        DriverDetails driverDetails = new DriverDetails(bookingDB.getDriver().toDriver(), bookingDB.getDriver().getLicenseNo());
-        EmployeeDetails employeeDetails = new EmployeeDetails(bookingDB.getEmployee().toEmployee());
-        LocalDateTime pickupDate = bookingDB.getPickUpDate();
-        LocalDateTime deliveryDate = bookingDB.getDeliveryDate();
+            Place pickupPlace = CreatePlaceFrom(bookingDB.getPickUpPlace(), bookingDB.getCar().getPlace());
+            Place deliveryPlace = CreatePlaceFrom(bookingDB.getDeliveryPlace(), bookingDB.getCar().getPlace());
 
-        BookingCriteria bookingCriteria = new BookingCriteria(pickupPlace, deliveryPlace, pickupDate, deliveryDate);
-        BookingDetails bookingDetails = new BookingDetails(bookingDB.getId(), carSummary, driverDetails, employeeDetails, bookingCriteria, bookingDB.getExtraFee(), bookingDB.getPrice());
+            CarSummary carSummary = new CarSummary(bookingDB.getCar().toCar(), pickupPlace);
+            DriverDetails driverDetails = new DriverDetails(bookingDB.getDriver().toDriver(), bookingDB.getDriver().getLicenseNo());
+            EmployeeDetails employeeDetails = new EmployeeDetails(bookingDB.getEmployee().toEmployee());
+            LocalDateTime pickupDate = bookingDB.getPickUpDate();
+            LocalDateTime deliveryDate = bookingDB.getDeliveryDate();
+
+            BookingCriteria bookingCriteria = new BookingCriteria(pickupPlace, deliveryPlace, pickupDate, deliveryDate);
+            bookingDetails = new BookingDetails(bookingDB.getId(), carSummary, driverDetails, employeeDetails, bookingCriteria, bookingDB.getExtraFee(), bookingDB.getPrice());
+        }
+        catch(Exception e)
+        {
+            throw new NotFoundException("Details for the booking could not be found.");
+        }
 
         return bookingDetails;
     }
