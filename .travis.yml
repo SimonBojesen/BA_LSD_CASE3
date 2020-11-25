@@ -6,7 +6,5 @@ script: "mvn test"
 deploy:
   provider: heroku
   api_key: $HEROKU_API_KEY
-  on:
-    jdk: openjdk15
   app:
     main: car-renting-service
