@@ -1,6 +1,6 @@
-if: branch = main
+if: branch = develop
 language: java
-jdk: openjdk15
+jdk: openjdk8
 sudo: false # faster builds
 script: "mvn test"
 deploy:
