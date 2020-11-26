@@ -1,8 +1,8 @@
 package booking.servicelayer;
 
+import booking.Contract;
 import booking.datalayer.dao.*;
 import booking.datalayer.entity.*;
-import booking.entity.Hotel;
 import booking.entity.Place;
 import booking.servicelayer.util.HelperFunctions;
 import booking.dto.*;
@@ -14,13 +14,11 @@ import booking.eto.UnavailableException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Array;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.*;
 
 @Service("ContractImpl")
-public class ContractImpl implements booking.Contract {
+public class ContractImpl implements Contract {
     private AddressRepository addressRepository;
     private EmployeeRepository employeeRepository;
     private DriverRepository driverRepository;
