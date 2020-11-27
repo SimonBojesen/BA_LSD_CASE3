@@ -13,6 +13,9 @@ import booking.eto.PersistanceFailedException;
 import booking.eto.UnavailableException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -21,7 +24,9 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.*;
 
+
 @Service("ContractImpl")
+@RestController
 public class ContractImpl extends UnicastRemoteObject implements booking.Contract {
     private AddressRepository addressRepository;
     private EmployeeRepository employeeRepository;
@@ -42,6 +47,11 @@ public class ContractImpl extends UnicastRemoteObject implements booking.Contrac
         this.hotelRepository = hotelRepository;
     }
 
+    @GetMapping("/error")
+    public String sayHello()
+    {
+        return String.format("Hello World!");
+    }
 
     public Collection<CarSummary> listAvailableCars(BookingCriteria bookingCriteria) throws NotFoundException, InvalidInputException {
         HelperFunctions.nullCheck(bookingCriteria);

@@ -5,6 +5,7 @@ import booking.servicelayer.ContractImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.rmi.Naming;
 import java.rmi.RemoteException;
