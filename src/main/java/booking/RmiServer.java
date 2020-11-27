@@ -5,13 +5,15 @@ import booking.servicelayer.ContractImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.remoting.rmi.RmiServiceExporter;
+import org.springframework.remoting.support.RemoteExporter;
 
-@SpringBootApplication
 @Configuration
+@SpringBootApplication
 public class RmiServer {
 
     private static AddressRepository addressRepository;
@@ -52,12 +54,13 @@ public class RmiServer {
         exporter.setServiceInterface(serviceInterface);
         exporter.setService(implementation);
         exporter.setServiceName(serviceInterface.getSimpleName());
-        exporter.setRegistryPort(1009);
+        exporter.setRegistryPort(1099);
         return exporter;
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(RmiServer.class, args);
+        //SpringApplication.run(RmiServer.class, args);
+        new SpringApplicationBuilder().sources(RmiServer.class).profiles("server").run(args);
     }
 
 }
