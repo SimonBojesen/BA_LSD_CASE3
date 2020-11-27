@@ -29,8 +29,15 @@ public class RmiClient {
 
     public static void main(String[] args) throws InvalidInputException {
         var service = new SpringApplicationBuilder().sources(RmiClient.class).profiles("client").web(WebApplicationType.NONE).run(args).getBean(Contract.class);
-        var result = service.calculateFee(createBookingCriteria());
-        System.out.println("FROM RMI-SERVER: " + result);
+        try
+        {
+            var result = service.calculateFee(createBookingCriteria());
+            System.out.println("FROM RMI-SERVER: " + result);
+        }
+        catch(java.rmi.RemoteException e)
+        {
+            System.out.println("BURN: " + e.getMessage());
+        }
         /*Contract service = SpringApplication.run(RmiClient.class, args).getBean(Contract.class);
         var result = service.calculateFee(createBookingCriteria());
         System.out.println(result);*/

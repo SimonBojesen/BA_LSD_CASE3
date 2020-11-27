@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.rmi.RemoteException;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Optional;
@@ -92,11 +93,12 @@ public class ContractImplTest
     }
 
     @Test
-    void createBookingTest() throws InvalidInputException {
+    void createBookingTest() throws InvalidInputException, RemoteException
+    {
         booking.entity.Place pickupplace = new booking.entity.Place("airport", address, true);
         booking.entity.Place deliveryplace = new booking.entity.Place("hotel", address2, true);
         BookingCriteria bookingCriteria = new BookingCriteria(pickupplace, deliveryplace, LocalDateTime.now(), LocalDateTime.now());
-        DriverDetails driverDetails = new DriverDetails(driver, driver.getLicenseNo());
+        DriverDetails driverDetails = new DriverDetails(driver);
         EmployeeDetails employeeDetails = new EmployeeDetails(employee);
         CarSummary carSummary = new CarSummary(car1, pickupplace);
         BookingDetails booking = contractImpl.createBooking(bookingCriteria, carSummary.getCar().getPrice(), driverDetails, employeeDetails, carSummary);
@@ -112,7 +114,7 @@ public class ContractImplTest
         booking.entity.Place pickupplace = new booking.entity.Place("airport", address, true);
         booking.entity.Place deliveryplace = new booking.entity.Place("hotel", address2, true);
         BookingCriteria bookingCriteria = new BookingCriteria(pickupplace, deliveryplace, LocalDateTime.now(), LocalDateTime.now());
-        DriverDetails driverDetails = new DriverDetails(driver, driver.getLicenseNo());
+        DriverDetails driverDetails = new DriverDetails(driver);
         EmployeeDetails employeeDetails = new EmployeeDetails(employee);
         CarSummary carSummary = new CarSummary(car1, pickupplace);
 
@@ -138,7 +140,8 @@ public class ContractImplTest
     }
 
     @Test
-    void calculateFeeTest_PickupAndDeliveryAreTheSame() throws InvalidInputException {
+    void calculateFeeTest_PickupAndDeliveryAreTheSame() throws InvalidInputException, RemoteException
+    {
         //arrange
         var pickupAddress = new Address("pickupVej",9999,"pickupCity");
         var pickupPlace = new Place("airport",pickupAddress,true);
@@ -154,7 +157,8 @@ public class ContractImplTest
     }
 
     @Test
-    void calculateFeeTest_MaxFee() throws InvalidInputException {
+    void calculateFeeTest_MaxFee() throws InvalidInputException, RemoteException
+    {
         //arrange
         var pickupAddress = new Address("pickupVej",9999,"pickupCity");
         var pickupPlace = new Place("airport",pickupAddress,true);
@@ -170,7 +174,8 @@ public class ContractImplTest
     }
 
     @Test
-    void calculateFeeTest_OnlyStreetNameDiffers() throws InvalidInputException {
+    void calculateFeeTest_OnlyStreetNameDiffers() throws InvalidInputException, RemoteException
+    {
         //arrange
         var pickupAddress = new Address("pickupVej",9999,"pickupCity");
         var pickupPlace = new Place("airport",pickupAddress,true);
@@ -186,7 +191,8 @@ public class ContractImplTest
     }
 
     @Test
-    void calculateFeeTest_StreetNameAndCityDiffers() throws InvalidInputException {
+    void calculateFeeTest_StreetNameAndCityDiffers() throws InvalidInputException, RemoteException
+    {
         //arrange
         var pickupAddress = new Address("pickupVej",9999,"pickupCity");
         var pickupPlace = new Place("airport",pickupAddress,true);
@@ -242,14 +248,15 @@ public class ContractImplTest
     }
 
     @Test
-    void saveBooking_MustThrowExceptionIfInputNoCarExistsTest() throws InvalidInputException {
+    void saveBooking_MustThrowExceptionIfInputNoCarExistsTest() throws InvalidInputException, RemoteException
+    {
         Optional<CarDB> emptyCar = Optional.empty();
         when(carRepository.findByLicensePlate(anyString())).thenReturn(emptyCar);
 
         booking.entity.Place pickupplace = new booking.entity.Place("airport", address, true);
         booking.entity.Place deliveryplace = new booking.entity.Place("hotel", address2, true);
         BookingCriteria bookingCriteria = new BookingCriteria(pickupplace, deliveryplace, LocalDateTime.now(), LocalDateTime.now());
-        DriverDetails driverDetails = new DriverDetails(driver, driver.getLicenseNo());
+        DriverDetails driverDetails = new DriverDetails(driver);
         EmployeeDetails employeeDetails = new EmployeeDetails(employee);
         CarSummary carSummary = new CarSummary(car1, pickupplace);
         BookingDetails booking = contractImpl.createBooking(bookingCriteria, car1.getPrice(), driverDetails, employeeDetails, carSummary);
@@ -260,7 +267,8 @@ public class ContractImplTest
     }
 
     @Test
-    void saveBooking_MustThrowExceptionIfInputNoEmployeeExistsTest() throws InvalidInputException {
+    void saveBooking_MustThrowExceptionIfInputNoEmployeeExistsTest() throws InvalidInputException, RemoteException
+    {
         CarDB car = new CarDB();
         Optional<CarDB> optionalCar = Optional.of(car);
         when(carRepository.findByLicensePlate(anyString())).thenReturn(optionalCar);
@@ -271,7 +279,7 @@ public class ContractImplTest
         booking.entity.Place pickupplace = new booking.entity.Place("airport", address, true);
         booking.entity.Place deliveryplace = new booking.entity.Place("hotel", address2, true);
         BookingCriteria bookingCriteria = new BookingCriteria(pickupplace, deliveryplace, LocalDateTime.now(), LocalDateTime.now());
-        DriverDetails driverDetails = new DriverDetails(driver, driver.getLicenseNo());
+        DriverDetails driverDetails = new DriverDetails(driver);
         EmployeeDetails employeeDetails = new EmployeeDetails(employee);
         CarSummary carSummary = new CarSummary(car1, pickupplace);
         BookingDetails booking = contractImpl.createBooking(bookingCriteria, car1.getPrice(), driverDetails, employeeDetails, carSummary);
@@ -282,7 +290,8 @@ public class ContractImplTest
     }
 
     @Test
-    void saveBooking_MustThrowExceptionIfInputNoDeliveryStationExistsTest() throws InvalidInputException {
+    void saveBooking_MustThrowExceptionIfInputNoDeliveryStationExistsTest() throws InvalidInputException, RemoteException
+    {
         CarDB car = new CarDB();
         Optional<CarDB> optionalCar = Optional.of(car);
         when(carRepository.findByLicensePlate(anyString())).thenReturn(optionalCar);
@@ -297,7 +306,7 @@ public class ContractImplTest
         booking.entity.Place pickupplace = new booking.entity.Place("airport", address, true);
         booking.entity.Place deliveryplace = new booking.entity.Place("hotel", address2, true);
         BookingCriteria bookingCriteria = new BookingCriteria(pickupplace, deliveryplace, LocalDateTime.now(), LocalDateTime.now());
-        DriverDetails driverDetails = new DriverDetails(driver, driver.getLicenseNo());
+        DriverDetails driverDetails = new DriverDetails(driver);
         EmployeeDetails employeeDetails = new EmployeeDetails(employee);
         CarSummary carSummary = new CarSummary(car1, pickupplace);
         BookingDetails booking = contractImpl.createBooking(bookingCriteria, car1.getPrice(), driverDetails, employeeDetails, carSummary);
@@ -308,7 +317,8 @@ public class ContractImplTest
     }
 
     @Test
-    void saveBooking_MustThrowExceptionIfTryingToInsertNullsTest() throws InvalidInputException {
+    void saveBooking_MustThrowExceptionIfTryingToInsertNullsTest() throws InvalidInputException, RemoteException
+    {
         CarDB car = new CarDB();
         Optional<CarDB> optionalCar = Optional.of(car);
         when(carRepository.findByLicensePlate(anyString())).thenReturn(optionalCar);
@@ -329,7 +339,7 @@ public class ContractImplTest
         booking.entity.Place pickupplace = new booking.entity.Place("airport", address, true);
         booking.entity.Place deliveryplace = new booking.entity.Place("hotel", address2, true);
         BookingCriteria bookingCriteria = new BookingCriteria(pickupplace, deliveryplace, LocalDateTime.now(), LocalDateTime.now());
-        DriverDetails driverDetails = new DriverDetails(driver, driver.getLicenseNo());
+        DriverDetails driverDetails = new DriverDetails(driver);
         EmployeeDetails employeeDetails = new EmployeeDetails(employee);
         CarSummary carSummary = new CarSummary(car1, pickupplace);
         BookingDetails booking = contractImpl.createBooking(bookingCriteria, car1.getPrice(), driverDetails, employeeDetails, carSummary);
@@ -340,7 +350,7 @@ public class ContractImplTest
     }
 
     @Test
-    public void mustCallBookingRepositoryWhenFindingBooking() throws NotFoundException, InvalidInputException, NoSuchFieldException, IllegalAccessException
+    public void mustCallBookingRepositoryWhenFindingBooking() throws NotFoundException, InvalidInputException, NoSuchFieldException, IllegalAccessException, RemoteException
     {
         // Arrange
         BookingDB bookingDB = mock(BookingDB.class);
@@ -365,7 +375,7 @@ public class ContractImplTest
     }
 
     @Test
-    public void mustReturnBookingDetailsWhenFindingBooking() throws NotFoundException, InvalidInputException
+    public void mustReturnBookingDetailsWhenFindingBooking() throws NotFoundException, InvalidInputException, RemoteException
     {
         // Arrange
         var expected = BookingDetails.class;
