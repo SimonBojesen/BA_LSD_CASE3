@@ -12,7 +12,7 @@ public class RMIClient
     public static void main(String args[])throws Exception
     {
         // name =  rmi:// + ServerIP +  /EngineName;
-        String remoteEngine = "rmi://localhost/BookingServices";
+        String remoteEngine = "rmi:https://car-renting-service.herokuapp.com/BookingServices";
 
         // Create local stub, lookup in the registry searching for the remote engine - the interface with the methods we want to use remotely
         Contract obj = (Contract) Naming.lookup(remoteEngine);
@@ -26,7 +26,8 @@ public class RMIClient
         Address address = new Address("testvej", 1111, "testby");
         Address address2 = new Address("testvej2", 11112, "testby2");
         Place place = new Place("test",address,true);
-        BookingCriteria bookingCriteria = new BookingCriteria(place,place, LocalDateTime.now(),LocalDateTime.now().plusDays(1));
+        Place place2 = new Place("test2", address2, true);
+        BookingCriteria bookingCriteria = new BookingCriteria(place,place2, LocalDateTime.now(),LocalDateTime.now().plusDays(1));
 
         Double fee = obj.calculateFee(bookingCriteria);
 
