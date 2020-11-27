@@ -12,7 +12,7 @@ public class RMIClient
     public static void main(String args[])throws Exception
     {
         // name =  rmi:// + ServerIP +  /EngineName;
-        String remoteEngine = "rmi:https://car-renting-service.herokuapp.com/BookingServices";
+        String remoteEngine = "rmi://car-renting-service.herokuapp.com/BookingServices";
 
         // Create local stub, lookup in the registry searching for the remote engine - the interface with the methods we want to use remotely
         Contract obj = (Contract) Naming.lookup(remoteEngine);
