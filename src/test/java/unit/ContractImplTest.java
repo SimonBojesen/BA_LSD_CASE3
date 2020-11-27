@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.rmi.RemoteException;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Optional;
@@ -39,7 +40,15 @@ public class ContractImplTest
     private HotelRepository hotelRepository = mock(HotelRepository.class);
 
     // SUT
-    private Contract contractImpl = new ContractImpl(addressRepository,employeeRepository,driverRepository,carRepository,bookingRepository, airportRepository, hotelRepository);
+    private Contract contractImpl;
+
+    {
+        try {
+            contractImpl = new ContractImpl(addressRepository,employeeRepository,driverRepository,carRepository,bookingRepository, airportRepository, hotelRepository);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
 
     //Test data
     private Address address;
@@ -96,7 +105,7 @@ public class ContractImplTest
         booking.entity.Place pickupplace = new booking.entity.Place("airport", address, true);
         booking.entity.Place deliveryplace = new booking.entity.Place("hotel", address2, true);
         BookingCriteria bookingCriteria = new BookingCriteria(pickupplace, deliveryplace, LocalDateTime.now(), LocalDateTime.now());
-        DriverDetails driverDetails = new DriverDetails(driver, driver.getLicenseNo());
+        DriverDetails driverDetails = new DriverDetails(driver);
         EmployeeDetails employeeDetails = new EmployeeDetails(employee);
         CarSummary carSummary = new CarSummary(car1, pickupplace);
         BookingDetails booking = contractImpl.createBooking(bookingCriteria, carSummary.getCar().getPrice(), driverDetails, employeeDetails, carSummary);
@@ -112,7 +121,7 @@ public class ContractImplTest
         booking.entity.Place pickupplace = new booking.entity.Place("airport", address, true);
         booking.entity.Place deliveryplace = new booking.entity.Place("hotel", address2, true);
         BookingCriteria bookingCriteria = new BookingCriteria(pickupplace, deliveryplace, LocalDateTime.now(), LocalDateTime.now());
-        DriverDetails driverDetails = new DriverDetails(driver, driver.getLicenseNo());
+        DriverDetails driverDetails = new DriverDetails(driver);
         EmployeeDetails employeeDetails = new EmployeeDetails(employee);
         CarSummary carSummary = new CarSummary(car1, pickupplace);
 
@@ -249,7 +258,7 @@ public class ContractImplTest
         booking.entity.Place pickupplace = new booking.entity.Place("airport", address, true);
         booking.entity.Place deliveryplace = new booking.entity.Place("hotel", address2, true);
         BookingCriteria bookingCriteria = new BookingCriteria(pickupplace, deliveryplace, LocalDateTime.now(), LocalDateTime.now());
-        DriverDetails driverDetails = new DriverDetails(driver, driver.getLicenseNo());
+        DriverDetails driverDetails = new DriverDetails(driver);
         EmployeeDetails employeeDetails = new EmployeeDetails(employee);
         CarSummary carSummary = new CarSummary(car1, pickupplace);
         BookingDetails booking = contractImpl.createBooking(bookingCriteria, car1.getPrice(), driverDetails, employeeDetails, carSummary);
@@ -271,7 +280,7 @@ public class ContractImplTest
         booking.entity.Place pickupplace = new booking.entity.Place("airport", address, true);
         booking.entity.Place deliveryplace = new booking.entity.Place("hotel", address2, true);
         BookingCriteria bookingCriteria = new BookingCriteria(pickupplace, deliveryplace, LocalDateTime.now(), LocalDateTime.now());
-        DriverDetails driverDetails = new DriverDetails(driver, driver.getLicenseNo());
+        DriverDetails driverDetails = new DriverDetails(driver);
         EmployeeDetails employeeDetails = new EmployeeDetails(employee);
         CarSummary carSummary = new CarSummary(car1, pickupplace);
         BookingDetails booking = contractImpl.createBooking(bookingCriteria, car1.getPrice(), driverDetails, employeeDetails, carSummary);
@@ -297,7 +306,7 @@ public class ContractImplTest
         booking.entity.Place pickupplace = new booking.entity.Place("airport", address, true);
         booking.entity.Place deliveryplace = new booking.entity.Place("hotel", address2, true);
         BookingCriteria bookingCriteria = new BookingCriteria(pickupplace, deliveryplace, LocalDateTime.now(), LocalDateTime.now());
-        DriverDetails driverDetails = new DriverDetails(driver, driver.getLicenseNo());
+        DriverDetails driverDetails = new DriverDetails(driver);
         EmployeeDetails employeeDetails = new EmployeeDetails(employee);
         CarSummary carSummary = new CarSummary(car1, pickupplace);
         BookingDetails booking = contractImpl.createBooking(bookingCriteria, car1.getPrice(), driverDetails, employeeDetails, carSummary);
@@ -329,7 +338,7 @@ public class ContractImplTest
         booking.entity.Place pickupplace = new booking.entity.Place("airport", address, true);
         booking.entity.Place deliveryplace = new booking.entity.Place("hotel", address2, true);
         BookingCriteria bookingCriteria = new BookingCriteria(pickupplace, deliveryplace, LocalDateTime.now(), LocalDateTime.now());
-        DriverDetails driverDetails = new DriverDetails(driver, driver.getLicenseNo());
+        DriverDetails driverDetails = new DriverDetails(driver);
         EmployeeDetails employeeDetails = new EmployeeDetails(employee);
         CarSummary carSummary = new CarSummary(car1, pickupplace);
         BookingDetails booking = contractImpl.createBooking(bookingCriteria, car1.getPrice(), driverDetails, employeeDetails, carSummary);

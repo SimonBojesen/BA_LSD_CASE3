@@ -6,12 +6,8 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 @SpringBootApplication
 public class Main {
-    public static void main(String[] args) {
-        ConfigurableApplicationContext context = SpringApplication.run(Main.class, args);
-
-
-        Test test = context.getBean(Test.class);
-        test.insertIntoDB();
-
+    public static void main(String[] args) throws Exception {
+        SpringApplication.run(Main.class, args);
+        RMIRegistry.createRegistry();
     }
 }
