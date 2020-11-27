@@ -105,7 +105,7 @@ public class ContractImpl implements Contract {
         BookingDetails booking;
         Address deliveryPlace = bookingDetails.getBookingCriteria().getDeliveryPlace().getAddress();
 
-        Optional<DriverDB> driver = driverRepository.findByLicenseNo(bookingDetails.getDriverDetails().getLicenseNo());
+        Optional<DriverDB> driver = driverRepository.findByLicenseNo(bookingDetails.getDriverDetails().getDriver().getLicenseNo());
         Optional<CarDB> car = carRepository.findByLicensePlate(bookingDetails.getCar().getCar().getLicensePlate());
         Optional<EmployeeDB> employee = employeeRepository.findBySocialSecurityNumber(bookingDetails.getEmployeeDetails().getSocialSecurityNumber());
         Optional<AddressDB> deliveryStation = addressRepository.findByStreetAddressAndCityAndPostalCode(deliveryPlace.getStreetAddress(), deliveryPlace.getCity(), deliveryPlace.getPostalCode());
@@ -187,7 +187,7 @@ public class ContractImpl implements Contract {
             Place deliveryPlace = CreatePlaceFrom(bookingDB.getDeliveryPlace(), bookingDB.getCar().getPlace());
 
             CarSummary carSummary = new CarSummary(bookingDB.getCar().toCar(), pickupPlace);
-            DriverDetails driverDetails = new DriverDetails(bookingDB.getDriver().toDriver(), bookingDB.getDriver().getLicenseNo());
+            DriverDetails driverDetails = new DriverDetails(bookingDB.getDriver().toDriver());
             EmployeeDetails employeeDetails = new EmployeeDetails(bookingDB.getEmployee().toEmployee());
             LocalDateTime pickupDate = bookingDB.getPickUpDate();
             LocalDateTime deliveryDate = bookingDB.getDeliveryDate();

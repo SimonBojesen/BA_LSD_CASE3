@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 public class RmiClient {
     @Bean RmiProxyFactoryBean service() {
         RmiProxyFactoryBean rmiProxyFactory = new RmiProxyFactoryBean();
-        rmiProxyFactory.setServiceUrl("rmi://localhost:1099/Contract");
+        rmiProxyFactory.setServiceUrl("rmi://localhost:1099/test");
         rmiProxyFactory.setServiceInterface(Contract.class);
         return rmiProxyFactory;
     }

@@ -53,8 +53,9 @@ public class RmiServer {
         RmiServiceExporter exporter = new RmiServiceExporter();
         exporter.setServiceInterface(serviceInterface);
         exporter.setService(implementation);
-        exporter.setServiceName(serviceInterface.getSimpleName());
+        exporter.setServiceName("test");
         exporter.setRegistryPort(1099);
+        System.out.println(serviceInterface.getSimpleName());
         return exporter;
     }
 
