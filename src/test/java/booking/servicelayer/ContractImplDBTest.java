@@ -94,7 +94,7 @@ public class ContractImplDBTest {
         booking.entity.Place pickUpPlace = new booking.entity.Place("airport", address, true);
         booking.entity.Place deliveryPlace = new booking.entity.Place("hotel", address2, true);
         BookingCriteria bookingCriteria = new BookingCriteria(pickUpPlace, deliveryPlace, LocalDateTime.now(), LocalDateTime.now());
-        DriverDetails driverDetails = new DriverDetails(driver, driver.getLicenseNo());
+        DriverDetails driverDetails = new DriverDetails(driver);
         EmployeeDetails employeeDetails = new EmployeeDetails(employee);
         CarSummary carSummary = new CarSummary(car1, pickUpPlace);
         BookingDetails booking = contractImpl.createBooking(bookingCriteria, car1.getPrice(), driverDetails, employeeDetails, carSummary);
@@ -110,7 +110,7 @@ public class ContractImplDBTest {
         BookingCriteria bookingCriteria = new BookingCriteria(pickUpPlace, deliveryPlace, LocalDateTime.now(), LocalDateTime.now());
 
         Driver driver = new Driver("test", new Address("halløj", 9876, "goddav"), "test@test.dk", new Date(), 98756372, true, 987654321L);
-        DriverDetails driverDetails = new DriverDetails(driver, driver.getLicenseNo());
+        DriverDetails driverDetails = new DriverDetails(driver);
 
         EmployeeDetails employeeDetails = new EmployeeDetails(employee);
         CarSummary carSummary = new CarSummary(car1, pickUpPlace);

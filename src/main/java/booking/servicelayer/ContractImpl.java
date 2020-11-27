@@ -14,13 +14,15 @@ import booking.eto.UnavailableException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.sql.Array;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.*;
 
 @Service("ContractImpl")
-public class ContractImpl implements booking.Contract {
+public class ContractImpl extends UnicastRemoteObject implements booking.Contract {
     private AddressRepository addressRepository;
     private EmployeeRepository employeeRepository;
     private DriverRepository driverRepository;
@@ -30,7 +32,7 @@ public class ContractImpl implements booking.Contract {
     private HotelRepository hotelRepository;
 
     @Autowired
-    public ContractImpl(AddressRepository addressRepository, EmployeeRepository employeeRepository, DriverRepository driverRepository, CarRepository carRepository, BookingRepository bookingRepository, AirportRepository airportRepository, HotelRepository hotelRepository) {
+    public ContractImpl(AddressRepository addressRepository, EmployeeRepository employeeRepository, DriverRepository driverRepository, CarRepository carRepository, BookingRepository bookingRepository, AirportRepository airportRepository, HotelRepository hotelRepository) throws RemoteException {
         this.addressRepository = addressRepository;
         this.employeeRepository = employeeRepository;
         this.driverRepository = driverRepository;
@@ -107,7 +109,7 @@ public class ContractImpl implements booking.Contract {
         BookingDetails booking;
         Address deliveryPlace = bookingDetails.getBookingCriteria().getDeliveryPlace().getAddress();
 
-        Optional<DriverDB> driver = driverRepository.findByLicenseNo(bookingDetails.getDriverDetails().getLicenseNo());
+        Optional<DriverDB> driver = driverRepository.findByLicenseNo(bookingDetails.getDriverDetails().getDriver().getLicenseNo());
         Optional<CarDB> car = carRepository.findByLicensePlate(bookingDetails.getCar().getCar().getLicensePlate());
         Optional<EmployeeDB> employee = employeeRepository.findBySocialSecurityNumber(bookingDetails.getEmployeeDetails().getSocialSecurityNumber());
         Optional<AddressDB> deliveryStation = addressRepository.findByStreetAddressAndCityAndPostalCode(deliveryPlace.getStreetAddress(), deliveryPlace.getCity(), deliveryPlace.getPostalCode());
@@ -189,7 +191,7 @@ public class ContractImpl implements booking.Contract {
             Place deliveryPlace = CreatePlaceFrom(bookingDB.getDeliveryPlace(), bookingDB.getCar().getPlace());
 
             CarSummary carSummary = new CarSummary(bookingDB.getCar().toCar(), pickupPlace);
-            DriverDetails driverDetails = new DriverDetails(bookingDB.getDriver().toDriver(), bookingDB.getDriver().getLicenseNo());
+            DriverDetails driverDetails = new DriverDetails(bookingDB.getDriver().toDriver());
             EmployeeDetails employeeDetails = new EmployeeDetails(bookingDB.getEmployee().toEmployee());
             LocalDateTime pickupDate = bookingDB.getPickUpDate();
             LocalDateTime deliveryDate = bookingDB.getDeliveryDate();
