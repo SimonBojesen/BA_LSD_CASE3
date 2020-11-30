@@ -40,8 +40,10 @@ public class RMIRegistry
         {
             System.out.println("RMI server localhost starts");
 
+            System.getProperties().forEach((k, v) -> System.out.println(k + ":" + v));
+            
             // Create a server registry at default port 1099
-            registry = LocateRegistry.createRegistry(1099);
+            registry = LocateRegistry.createRegistry(Integer.parseInt(System.getProperty("$PORT")));
             System.out.println("RMI registry created ");
 
             // Create engine of remote services, running on the server
