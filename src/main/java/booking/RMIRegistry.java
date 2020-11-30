@@ -41,15 +41,15 @@ public class RMIRegistry
             System.out.println("RMI server localhost starts");
 
             // Create a server registry at default port 1099
-            registry = LocateRegistry.createRegistry(Integer.parseInt(System.getenv("PORT")));
+            registry = LocateRegistry.createRegistry(1099);
             System.out.println("RMI registry created ");
 
             // Create engine of remote services, running on the server
             ContractImpl remoteEngine = new ContractImpl(addressRepository,employeeRepository,driverRepository,carRepository,bookingRepository,airportRepository,hotelRepository);
-
+            System.out.println(remoteEngine);
             // Give a name to this engine
             String engineName = "BookingServices";
-
+            System.out.println(engineName);
             // Register the engine by the name, which later will be given to the clients
             Naming.rebind("//car-renting-service.herokuapp.com/" + engineName, remoteEngine);
             System.out.println("Engine " + engineName + " bound in registry");
