@@ -51,7 +51,7 @@ public class RMIRegistry
             String engineName = "BookingServices";
             System.out.println(engineName);
             // Register the engine by the name, which later will be given to the clients
-            Naming.rebind("//car-renting-service.herokuapp.com/" + engineName, remoteEngine);
+            Naming.rebind("//car-renting-service.herokuapp.com:1099/" + engineName, remoteEngine);
             System.out.println("Engine " + engineName + " bound in registry");
         }
         catch (Exception e)
