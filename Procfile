@@ -1,1 +1,1 @@
-web: java $JAVA_OPTS -cp target/classes:target/dependency/* classes.booking.Main
+web: java $JAVA_OPTS -cp target/classes:target/dependency/* booking.Main
