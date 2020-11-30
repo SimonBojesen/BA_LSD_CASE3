@@ -16,7 +16,7 @@ public class Main {
                         .build();
 
         springApplication.run(args);
-        
+
         RMIRegistry.createRegistry();
     }
 }
