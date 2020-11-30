@@ -48,11 +48,11 @@ public class RMIRegistry
             ContractImpl remoteEngine = new ContractImpl(addressRepository,employeeRepository,driverRepository,carRepository,bookingRepository,airportRepository,hotelRepository);
             System.out.println(remoteEngine);
             // Give a name to this engine
-            String engineName = "BookingServices";
-            System.out.println(engineName);
+            //String engineName = "BookingServices";
+            //System.out.println(engineName);
             // Register the engine by the name, which later will be given to the clients
-            Naming.rebind("//car-renting-service.herokuapp.com/" + engineName, remoteEngine);
-            System.out.println("Engine " + engineName + " bound in registry");
+            Naming.rebind("car-renting-service.herokuapp.com", remoteEngine);
+            System.out.println("Engine bound in registry");
         }
         catch (Exception e)
         {
