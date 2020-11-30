@@ -56,6 +56,7 @@ public class RMIRegistry
         }
         catch (Exception e)
         {
+            e.printStackTrace();
             System.err.println("Exception:" + e);
         }
     }
