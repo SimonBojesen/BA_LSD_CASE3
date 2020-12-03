@@ -4,12 +4,14 @@ addons:
   ssh_known_hosts: 207.154.197.222
 jdk: openjdk15
 sudo: false
-script: mvn test
+#script: mvn test
 deploy:
+  skip_cleanup: true
   provider: script
-  script: deploy.sh
+  script: mvn -B -V deploy
   on:
     branch: main
 before_install:
+- openssl aes-256-cbc -in travis_rsa.enc -out travis_rsa -d
 - chmod 600 travis_rsa
 - mv travis_rsa ~/.ssh/id_rsa
