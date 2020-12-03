@@ -1,0 +1,12 @@
+[Unit]
+Description=booking-service
+After=network.target
+StartLimitIntervalSec=0
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=root
+ExecStart=/usr/lib/jvm/java-15-openjdk-amd64/bin/java -jar /artifact/BA_LSD_CASE3-1.0-SNAPSHOT.jar
+[Install]
+WantedBy=multi-user.target

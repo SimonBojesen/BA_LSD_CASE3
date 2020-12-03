@@ -39,7 +39,7 @@ public class RMIRegistry
         try
         {
             System.out.println("RMI server localhost starts");
-
+            System.setProperty("java.rmi.server.hostname","207.154.197.222");
             // Create a server registry at default port 1099
             registry = LocateRegistry.createRegistry(1099);
             System.out.println("RMI registry created ");
@@ -51,7 +51,7 @@ public class RMIRegistry
             String engineName = "BookingServices";
             System.out.println(engineName);
             // Register the engine by the name, which later will be given to the clients
-            Naming.rebind("//207.154.224.203/" + engineName, remoteEngine);
+            Naming.rebind("//localhost/" + engineName, remoteEngine);
             System.out.println("Engine " + engineName + " bound in registry");
         }
         catch (Exception e)
