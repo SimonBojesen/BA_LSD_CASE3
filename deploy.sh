@@ -5,7 +5,7 @@ if [ $TRAVIS_BRANCH == 'main' ] ; then
   ssh-add ~/.ssh/id_rsa
 
 #  rsync -a --exclude={'/src','/public'} client/ travis@207.154.224.203:/root/travis/demo/client
-  rsync -a server/ travis@207.154.224.203:/root/travis/demo/server
+  rsync -a src/main/ travis@207.154.197.222:/root/travis/demo/src/main
 else
   echo "Not deploying, since the branch isn't master."
 fi
