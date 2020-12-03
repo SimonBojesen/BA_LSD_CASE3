@@ -12,7 +12,6 @@ public class RMIClient
     public static void main(String args[])throws Exception
     {
         // name =  rmi:// + ServerIP +  /EngineName;
-        System.setProperty("java.rmi.server.hostname","207.154.197.222");
         String remoteEngine = "rmi://207.154.197.222/BookingServices";
 
         // Create local stub, lookup in the registry searching for the remote engine - the interface with the methods we want to use remotely

@@ -33,3 +33,4 @@ build/
 ### VS Code ###
 .vscode/
 /travis_rsa.pub
+/travis_rsa
