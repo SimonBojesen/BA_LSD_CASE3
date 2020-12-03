@@ -11,7 +11,9 @@ deploy:
   on:
     branch: main
 before_install:
-- openssl aes-256-cbc -K $encrypted_0ddd2445e49f_key -iv $encrypted_0ddd2445e49f_iv
-  -in travis_rsa.enc -out travis_rsa -d
+- openssl aes-256-cbc -k "$aNeiYDJdMk2og6tjKBW0" -in travis_rsa.enc -out travis_rsa -d
 - chmod 600 travis_rsa
 - mv travis_rsa ~/.ssh/id_rsa
+env:
+  global:
+    secure: L06A4KsIbmbPUVu1aiKOXTDXr6EelepvvfuBs6Z4DIPhW1iQIpSOaqPWGJ3yabuWaeuPw8oJKMJNLRX6iZoOuNoIoi8U3FMLap7oz6gyYBEaDeIkj2hVkEhvnR1ecueyM226opRqBoFmAyZn9/adpKe1ULAZc5D/zj80BWEGHqO9NAvazgSiHrgbnz3KOH4fRN1XoLcvOiJrwA3Lyay2DMUQNj2gTyFDbmGL8BmZ4CaFCAtbGojfN87AUpgYRrBkBN5eXCSieeSHWM1UbvdEfa3+mU4SY0DZnR/zuIBUcLXGWAw17lyUUBzTjZ3uvWLXz+dEMEd3L+VG2dIcO9msp8847jAIjQ4egPKvDAPHHYFgEe7na6IQdcn42NLLr/jaQeMeNte0cEp6u7BEK6D8IjsKMYxJPxPJfi1xQULoeuxcFEE/p0gyAP0h8fz820fL9EeV1fwEKNw5slhYA0F+7q48h3g7+YZWNrCPjIfQoc1o1NMLaVDilGAGnXi/vorl3aGbqDWSQZF3JPoTNRB9smk6sS8z2KV7+jDjWjKyGES9wl+gzQVcvo7ejU5hOcLBdAaGDpjFPRRFITFnPe7NtB1Ok4r20cp0ZgXi4I9mZGSZgk7eqQRhx309iroUbHphQqGiE6yFX7YDINyB6LFIlLdTZV5Iu1LIzCLL5vAtR7c=
