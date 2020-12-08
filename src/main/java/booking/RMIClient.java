@@ -29,7 +29,9 @@ public class RMIClient
         BookingCriteria bookingCriteria = new BookingCriteria(place,place2, LocalDateTime.now(),LocalDateTime.now().plusDays(1));
         Double fee = obj.calculateFee(bookingCriteria);
 
-        System.out.println(fee);
+        //obj.listAvailableCars(bookingCriteria);
+
+        System.out.println(obj.listAvailableCars(bookingCriteria).size());
     }
 
 }

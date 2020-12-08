@@ -17,7 +17,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.rmi.Naming;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.Array;
 import java.sql.SQLException;
@@ -28,16 +31,24 @@ import java.util.*;
 @Service("ContractImpl")
 @RestController
 public class ContractImpl extends UnicastRemoteObject implements booking.Contract {
+    @Autowired
     private AddressRepository addressRepository;
+    @Autowired
     private EmployeeRepository employeeRepository;
+    @Autowired
     private DriverRepository driverRepository;
+    @Autowired
     private CarRepository carRepository;
+    @Autowired
     private BookingRepository bookingRepository;
+    @Autowired
     private AirportRepository airportRepository;
+    @Autowired
     private HotelRepository hotelRepository;
 
     @Autowired
     public ContractImpl(AddressRepository addressRepository, EmployeeRepository employeeRepository, DriverRepository driverRepository, CarRepository carRepository, BookingRepository bookingRepository, AirportRepository airportRepository, HotelRepository hotelRepository) throws RemoteException {
+        super();
         this.addressRepository = addressRepository;
         this.employeeRepository = employeeRepository;
         this.driverRepository = driverRepository;
@@ -46,6 +57,7 @@ public class ContractImpl extends UnicastRemoteObject implements booking.Contrac
         this.airportRepository = airportRepository;
         this.hotelRepository = hotelRepository;
     }
+
 
     @GetMapping("/error")
     public String sayHello()
