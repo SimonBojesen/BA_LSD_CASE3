@@ -13,11 +13,14 @@ before_deploy:
   - ssh-add ~/.ssh/travis_rsa
   #mv travis_rsa ~/.ssh/id_rsa
 deploy:
-  skip_cleanup: true
-  provider: script
-  script: deploy.sh
-  on:
-    branch: main
+  - provider: script
+    script: scp booking-service.service root@207.154.197.222:/etc/systemd/system
+    on:
+      branch: main
+  - provider: script
+    script: scp target/BA_LSD_CASE3-1.0-SNAPSHOT.jar root@207.154.197.222:/artifact
+    on:
+      branch: main
 after_deploy:
   - systemctl start booking-service.service
 env:
