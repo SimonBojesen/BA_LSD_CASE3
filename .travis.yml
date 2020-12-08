@@ -18,7 +18,7 @@ deploy:
   script: deploy.sh
   on:
     branch: main
-after_succes:
+after_deploy:
   - systemctl start booking-service.service
 env:
   global:
