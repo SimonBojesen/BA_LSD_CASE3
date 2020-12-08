@@ -5,18 +5,14 @@ addons:
 jdk: openjdk15
 script: mvn clean package
 sudo: false
-#deploy:
-  #skip_cleanup: true
-  #provider: script
-  #script: deploy.sh
-  #on:
-    #branch: main
-
 deploy:
-  - provider: script
+  skip_cleanup: true
+  provider: script
   script: deploy.sh
+  on:
+    branch: main
 after_succes:
-  script: systemctl start booking-service.service
+  - systemctl start booking-service.service
 before_install:
 - openssl aes-256-cbc -k $encrypted_pass -in travis_rsa.enc -out travis_rsa -d
 - chmod 600 travis_rsa
@@ -25,3 +21,5 @@ env:
   global:
     secure: QZyfJDCjJ0+WfdP0Vf7wSXneR1b7dxxINxk6rJJ8iC6yi0xTMEcEuoLYnNxUu+u1tPMhM2fEuUSrr7+fyY+GdTmtiaQVCuHCtlSXVSQSAGuZn4tnR+nTcmssSp4uEGoS2DFuFV8E3kRI+4XEcWVUXH/wBuOpj7OUlDkSnxZLCTHbMNEsbtxVa8z4Xo0J7anIBO80AiD6Qj1cLsSox1g1xDurNF3B28z2JSvyIsbaT78T/rSOalVJlH7yRiipLLVD79fXNmydlQEr7Plo7uVh6ZqmZ4/fsvjuoTE4x7yNlOepK0a+8H5VJJqeS81iOwHp8wQJmcpnUWNB/AnikkzKVE+w+d85v8b4kGJ0Rc7Cf+7Vcx4Z+XLQvgizwv9hMpd1yYFzTOlfNH0iwKCc+bhfU6MjKiiB4N7QJtvkkWfVWQMujdSoqWdRo9oOiCG9iRHqwnZaQgGVH2Cm4dyJaLbmOGs3okPKhBEZQfGvLYrWLSdagg5vjskuFfsmL92/KHydNYxF7kvhxOAlH6IETlTrnJNGTd3Fy+XkZjje8rcTSAbiU+G+5ATeMcjiAMsyLVnbLWkg5fR2Oexw3JOBzyx4gaNtVlf6qVISY0xmpv7PBo4aDExGul2G0tuS132ov85Whv20yeOMsQdSffq/N2EUrclJzP0i1mi8DIHEMdwQAFw=
 
+after_script:
+- systemctl start booking-service.service
