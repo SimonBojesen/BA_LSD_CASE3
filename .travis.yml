@@ -12,7 +12,7 @@ deploy:
   on:
     branch: main
 after_succes:
-  script: systemctl start booking-service.service
+  - systemctl start booking-service.service
 before_install:
 - openssl aes-256-cbc -k $encrypted_pass -in travis_rsa.enc -out travis_rsa -d
 - chmod 600 travis_rsa
